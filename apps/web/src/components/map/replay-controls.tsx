@@ -123,15 +123,19 @@ export function ReplayControls({
             setPlaying(false);
             setMinute(minute ?? 0);
           }}
-          aria-label="Replay position within the archived day"
         >
           <Slider.Track className="relative h-1 grow rounded-full bg-[var(--ns-border)]">
             <Slider.Range className="absolute h-full rounded-full bg-[var(--ns-accent)]" />
           </Slider.Track>
+          {/* The label belongs on the Thumb, not the Root: Radix puts
+              role="slider" on the thumb, so a label on the root never reaches
+              the element that needs a name. axe reports the root form as
+              `aria-input-field-name`, which is how this was found. */}
           <Slider.Thumb
             className="block size-4 rounded-full border-2 border-[var(--ns-bg)] bg-[var(--ns-accent)]
                        shadow focus-visible:outline-2 focus-visible:outline-offset-2
                        focus-visible:outline-[var(--ns-focus)]"
+            aria-label="Replay position within the archived day"
             aria-valuetext={formatTimestamp(displayed)}
           />
         </Slider.Root>

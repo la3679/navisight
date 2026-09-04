@@ -102,14 +102,18 @@ const badgeVariants = cva(
       tone: {
         neutral:
           "border-[var(--ns-border)] bg-[var(--ns-surface-raised)] text-[var(--ns-text-secondary)]",
+        // Text uses the *-on-tint variant, never the base hue. A hue that
+        // clears 4.5:1 against the surface does not necessarily clear it
+        // against a 12% tint of itself — light-mode `good` measured 2.83:1.
+        // See globals.css.
         accent:
           "border-[color-mix(in_oklab,var(--ns-accent)_40%,transparent)] " +
-          "bg-[color-mix(in_oklab,var(--ns-accent)_12%,transparent)] text-[var(--ns-accent)]",
-        info: "border-[color-mix(in_oklab,var(--ns-info)_40%,transparent)] bg-[color-mix(in_oklab,var(--ns-info)_12%,transparent)] text-[var(--ns-info)]",
+          "bg-[color-mix(in_oklab,var(--ns-accent)_12%,transparent)] text-[var(--ns-accent-on-tint)]",
+        info: "border-[color-mix(in_oklab,var(--ns-info)_40%,transparent)] bg-[color-mix(in_oklab,var(--ns-info)_12%,transparent)] text-[var(--ns-info-on-tint)]",
         warning:
-          "border-[color-mix(in_oklab,var(--ns-warning)_40%,transparent)] bg-[color-mix(in_oklab,var(--ns-warning)_12%,transparent)] text-[var(--ns-warning)]",
+          "border-[color-mix(in_oklab,var(--ns-warning)_40%,transparent)] bg-[color-mix(in_oklab,var(--ns-warning)_12%,transparent)] text-[var(--ns-warning-on-tint)]",
         critical:
-          "border-[color-mix(in_oklab,var(--ns-critical)_40%,transparent)] bg-[color-mix(in_oklab,var(--ns-critical)_12%,transparent)] text-[var(--ns-critical)]",
+          "border-[color-mix(in_oklab,var(--ns-critical)_40%,transparent)] bg-[color-mix(in_oklab,var(--ns-critical)_12%,transparent)] text-[var(--ns-critical-on-tint)]",
       },
     },
     defaultVariants: { tone: "neutral" },
@@ -187,7 +191,13 @@ export function Field({
       >
         {value}
       </dd>
-      {hint ? <p className="mt-0.5 text-[11px] text-[var(--ns-text-muted)]">{hint}</p> : null}
+      {/* A second <dd>, not a <p>. This component is used inside <dl>, and a
+          <div> there may contain only <dt> and <dd> — a <p> makes the list
+          invalid, which is a real defect rather than pedantry: assistive
+          technology pairs terms with descriptions using that structure. */}
+      {hint ? (
+        <dd className="mt-0.5 text-[11px] text-[var(--ns-text-muted)]">{hint}</dd>
+      ) : null}
     </div>
   );
 }

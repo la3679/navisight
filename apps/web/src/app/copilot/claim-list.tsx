@@ -27,8 +27,10 @@ type KindMeta = {
   label: string;
   meaning: string;
   icon: React.ComponentType<{ className?: string }>;
-  /** Border and text colour. Status hues, never a data-series colour. */
+  /** Tint for the border and background. A status hue, never a series colour. */
   color: string;
+  /** Text colour, contrast-checked against a 12% tint of `color`. */
+  textColor: string;
 };
 
 export const CLAIM_KINDS: Record<AgentClaimKind, KindMeta> = {
@@ -37,24 +39,28 @@ export const CLAIM_KINDS: Record<AgentClaimKind, KindMeta> = {
     meaning: "Read directly from a record in the archive.",
     icon: Circle,
     color: "var(--ns-good)",
+    textColor: "var(--ns-good-on-tint)",
   },
   derived: {
     label: "Derived",
     meaning: "Computed by a tool from observations — a count, a mean, a bucket.",
     icon: Ruler,
     color: "var(--ns-info)",
+    textColor: "var(--ns-info-on-tint)",
   },
   heuristic: {
     label: "Heuristic",
     meaning: "A signal that suggests something without establishing it.",
     icon: Compass,
     color: "var(--ns-warning)",
+    textColor: "var(--ns-warning-on-tint)",
   },
   interpretation: {
     label: "Interpretation",
     meaning: "The model's reading of the evidence. The weakest kind, and its own.",
     icon: Lightbulb,
     color: "var(--ns-text-muted)",
+    textColor: "var(--ns-text-muted-on-tint)",
   },
 };
 
@@ -74,7 +80,7 @@ export function ClaimKindBadge({ kind }: { kind: AgentClaimKind }) {
       className="inline-flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5
                  text-[10px] font-medium uppercase tracking-wide"
       style={{
-        color: meta.color,
+        color: meta.textColor,
         borderColor: `color-mix(in oklab, ${meta.color} 40%, transparent)`,
         backgroundColor: `color-mix(in oklab, ${meta.color} 12%, transparent)`,
       }}

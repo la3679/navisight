@@ -91,13 +91,22 @@ function Statistic({
   label: string;
   hint: string;
 }) {
+  // Inside a <dl>, so this has to be a dt/dd pair — a <dl> of <p> elements is
+  // a definition list containing no definitions, which is what a screen reader
+  // is told it is getting. The label reads as the term and the figure as its
+  // description; the visual order is reversed with `order`, because sighted
+  // readers scan the number first.
   return (
-    <div>
-      <p className="font-[family-name:var(--font-mono)] text-2xl font-semibold tabular text-[var(--ns-text)] md:text-3xl">
+    <div className="flex flex-col">
+      <dt className="order-2 mt-0.5 text-xs font-medium text-[var(--ns-text-secondary)]">
+        {label}
+      </dt>
+      <dd className="order-1 font-[family-name:var(--font-mono)] text-2xl font-semibold tabular text-[var(--ns-text)] md:text-3xl">
         {value}
-      </p>
-      <p className="mt-0.5 text-xs font-medium text-[var(--ns-text-secondary)]">{label}</p>
-      <p className="mt-0.5 text-[11px] leading-snug text-[var(--ns-text-muted)]">{hint}</p>
+      </dd>
+      <dd className="order-3 mt-0.5 text-[11px] leading-snug text-[var(--ns-text-muted)]">
+        {hint}
+      </dd>
     </div>
   );
 }
@@ -274,7 +283,7 @@ export function HomeView() {
                   <strong className="text-[var(--ns-text)]">Anything a vessel did not
                   broadcast.</strong> AIS fields are self-reported and often blank. A missing
                   heading is shown as missing, never as zero — see the{" "}
-                  <Link href="/data" className="text-[var(--ns-accent)] underline-offset-2 hover:underline">
+                  <Link href="/data" className="text-[var(--ns-accent)] underline underline-offset-2">
                     measured field completeness
                   </Link>
                   .

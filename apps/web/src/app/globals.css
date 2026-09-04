@@ -58,6 +58,22 @@
   --ns-critical: #e66767;
   --ns-good: #199e70;
 
+  /* Text colours for use INSIDE a 12%-tinted badge of the same hue.
+     A status hue that clears 4.5:1 against --ns-surface does NOT necessarily
+     clear it against a 12% tint of itself, because the tint lifts the
+     background toward the text. Measured: light-mode --ns-good on its own tint
+     was 2.83:1, and four more sat between 3.4 and 4.3 — all failures at the
+     10-11px these labels are set in, which is not "large text".
+     Each value is the hue moved toward white (dark) or black (light) by the
+     smallest step that reaches 4.5:1 against that tint, so the design is
+     preserved and the contrast is real. Solved, not eyeballed. */
+  --ns-info-on-tint: #458ee7;
+  --ns-warning-on-tint: #c98500;
+  --ns-critical-on-tint: #e66767;
+  --ns-good-on-tint: #199e70;
+  --ns-accent-on-tint: #4fd1c5;
+  --ns-text-muted-on-tint: #7d8e9f;
+
   /* Categorical series, validated against --ns-surface (#101822) with
      scripts/validate_palette.js: lightness band, chroma floor, adjacent-pair
      CVD separation, normal-vision floor, and 3:1 contrast all PASS. */
@@ -116,6 +132,14 @@
     --ns-critical: #c8322f;
     --ns-good: #0f7d57;
 
+    /* See the dark block above for why these exist. */
+    --ns-info-on-tint: #2467b8;
+    --ns-warning-on-tint: #905f00;
+    --ns-critical-on-tint: #bc2f2c;
+    --ns-good-on-tint: #0e7652;
+    --ns-accent-on-tint: #0b756c;
+    --ns-text-muted-on-tint: #57697a;
+
     --ns-series-1: #2a78d6;
     --ns-series-2: #eb6834;
     --ns-series-3: #1baf7a;
@@ -160,6 +184,14 @@
   --ns-warning: #a86e00;
   --ns-critical: #c8322f;
   --ns-good: #0f7d57;
+
+  /* See the dark block above for why these exist. */
+  --ns-info-on-tint: #2467b8;
+  --ns-warning-on-tint: #905f00;
+  --ns-critical-on-tint: #bc2f2c;
+  --ns-good-on-tint: #0e7652;
+  --ns-accent-on-tint: #0b756c;
+  --ns-text-muted-on-tint: #57697a;
 
   --ns-series-1: #2a78d6;
   --ns-series-2: #eb6834;
