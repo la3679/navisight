@@ -1,0 +1,127 @@
+# ---------------------------------------------------------------------------
+# NaviSight — repository ignore rules
+#
+# Two rules matter more than the rest and are called out explicitly:
+#   1. Raw AIS source data never enters this repository (see "Raw + derived
+#      data" below). The development dataset is ~577 MiB / 5.9M rows and lives
+#      OUTSIDE the repo, referenced through AIS_DATA_PATH.
+#   2. Secrets never enter this repository. Only .env.example is tracked.
+# ---------------------------------------------------------------------------
+
+# --- Secrets & local environment -------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+!**/public/**/*.key
+
+# --- Raw + derived data ------------------------------------------------------
+# The AIS source file and anything derived from it at full scale. Small,
+# deliberately-committed fixtures live in data/samples/ and tests/fixtures/,
+# which are NOT ignored, so we do not blanket-ignore *.csv.
+ais-*.csv
+AIS_*.csv
+data/raw/
+data/processed/
+data/local/
+data/reference/*.csv
+!data/reference/.gitkeep
+*.csv.gz
+*.csv.zip
+*.zst
+*.parquet
+*.bson
+*.bson.gz
+
+# --- MongoDB local storage ---------------------------------------------------
+mongo-data/
+mongodb-data/
+infra/docker/mongo-data/
+dump/
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+sdist/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+.ruff_cache/
+.tox/
+.nox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# --- Node / Next.js ----------------------------------------------------------
+node_modules/
+.pnpm-store/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+
+# --- Testing artifacts -------------------------------------------------------
+playwright-report/
+playwright/.cache/
+test-results/
+blob-report/
+coverage/
+.vitest/
+
+# --- Benchmarks & profiling scratch -----------------------------------------
+# Committed benchmark *reports* live in docs/performance/; raw scratch does not.
+benchmarks-out/
+*.prof
+*.pstats
+.bundle-analysis/
+
+# --- Agent / tooling local state --------------------------------------------
+.agent/
+graphify-out/
+.graphify/
+.claude/settings.local.json
+
+# --- Logs --------------------------------------------------------------------
+*.log
+logs/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Editors & OS ------------------------------------------------------------
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Local screenshots not intended for docs --------------------------------
+# docs/screenshots/ IS tracked; this catches ad-hoc captures elsewhere.
+/screenshots/
+*.local.png

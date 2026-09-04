@@ -1,0 +1,28 @@
+# Normalize line endings; the repo is developed on Windows and CI runs Linux.
+* text=auto eol=lf
+
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+*.py    text diff=python
+*.ts    text
+*.tsx   text
+*.md    text diff=markdown
+*.json  text
+*.yml   text
+*.yaml  text
+
+# Binary assets
+*.png   binary
+*.jpg   binary
+*.webp  binary
+*.ico   binary
+*.glb   binary
+*.gltf  text
+*.ktx2  binary
+*.woff2 binary
+
+# Lockfiles: keep out of diff noise but still tracked.
+pnpm-lock.yaml  -diff linguist-generated
+uv.lock         -diff linguist-generated
