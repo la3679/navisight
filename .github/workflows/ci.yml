@@ -38,6 +38,24 @@ env:
   NODE_VERSION: "22"
 
 jobs:
+  # --------------------------------------------------------------- secrets
+  secrets-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # gitleaks needs history to scan commits, not just the working tree —
+          # a credential removed in a later commit is still in the repository.
+          fetch-depth: 0
+
+      - name: Scan for committed credentials
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   # ---------------------------------------------------------------- backend
   api:
     name: API — lint, types, tests
