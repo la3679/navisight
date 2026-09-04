@@ -76,6 +76,22 @@ class BoundingBox:
         the viewport is a screen rectangle in degrees, and ``$box`` treats it as
         exactly that. A GeoJSON polygon would be interpreted with geodesic edges,
         which is not what a rectangular viewport means.
+
+        **That choice has a measured cost, and it is not free.** ``$box`` is a
+        legacy-coordinate operator, so a 2dsphere index cannot answer it:
+        ``explain()`` reports ``COLLSCAN``, ``totalKeysExamined 0``,
+        ``totalDocsExamined 16,294``. The same rectangle as a GeoJSON polygon
+        uses ``latest_location_2dsphere`` (347 keys, 341 documents) and is about
+        14x faster — 3.95 ms against 55.06 ms.
+
+        It is kept anyway, for now, because the semantics are the ones the
+        screen actually has and 55 ms over a collection bounded by *vessel
+        count* is acceptable. The two forms returned an identical 338 documents
+        for the benchmark's box, so the geodesic difference is invisible at this
+        scale — but it is real at wide boxes and high latitudes, which is
+        exactly where a silent change would be worst. Revisit if the fleet grows
+        by an order of magnitude; the numbers to revisit it with are in
+        ``docs/performance/BENCHMARKS.md``.
         """
         if not self.crosses_antimeridian:
             return {

@@ -120,10 +120,19 @@ INDEX_SPECS: tuple[IndexSpec, ...] = (
         keys=[("location", pymongo.GEOSPHERE)],
         name="latest_location_2dsphere",
         serves=(
-            "The operations map's primary query: GET /api/v1/map/vessels for a "
-            "viewport, and GET /api/v1/geo/nearby without a time filter. This is the "
-            "index that replaces a 5.9M-document aggregation with a bounded lookup "
-            "over 16k documents on every map pan (ADR-0003)."
+            "Distance-sorted proximity: GET /api/v1/geo/nearby and the agent's "
+            "find_vessels_near_location, both of which run $geoNear. MongoDB "
+            "refuses to plan $geoNear without a geo index at all, so this one is "
+            "not an optimisation for those queries — it is what makes them "
+            "possible. Measured at 3.02 ms over 16,294 documents. "
+            "It does NOT serve the map viewport, despite that being the obvious "
+            "guess and what this field previously claimed. GET /api/v1/map/vessels "
+            "filters with $geoWithin/$box, a legacy-coordinate operator that a "
+            "2dsphere index cannot answer: explain() reports COLLSCAN, "
+            "totalKeysExamined 0, totalDocsExamined 16,294. That query is fast "
+            "anyway (55.06 ms) because vessel_latest is bounded by vessel count "
+            "rather than by archive size — which is ADR-0003's benefit, and is "
+            "separate from this index. See docs/performance/BENCHMARKS.md."
         ),
         write_cost=(
             "Negligible: one entry per vessel, updated at most once per observation "
