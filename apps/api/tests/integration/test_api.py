@@ -21,8 +21,8 @@ from pymongo.database import Database
 
 from app.config import get_settings
 from app.db import collections, indexes
-from app.ingest.pipeline import build_latest_update, build_position_document
 from app.domain.ais import parse_row
+from app.ingest.pipeline import build_latest_update, build_position_document
 from tests.conftest import ais_row
 
 pytestmark = pytest.mark.integration
@@ -60,30 +60,29 @@ def seeded(test_database: Database[dict[str, Any]]) -> Database[dict[str, Any]]:
     stored shape changes, these tests see the same change the app does.
     """
     indexes.ensure_indexes(test_database)
-    rows = []
-    for index in range(60):
-        rows.append(
-            ais_row(
-                mmsi="366000001",
-                at=BASE + timedelta(minutes=index),
-                longitude=-74.0 + index * 0.005,
-                latitude=40.0 + index * 0.005,
-                name="ALPHA TRADER",
-                vessel_type="70",
-            )
+    rows = [
+        ais_row(
+            mmsi="366000001",
+            at=BASE + timedelta(minutes=index),
+            longitude=-74.0 + index * 0.005,
+            latitude=40.0 + index * 0.005,
+            name="ALPHA TRADER",
+            vessel_type="70",
         )
-    for index in range(10):
-        rows.append(
-            ais_row(
-                mmsi="366000002",
-                at=BASE + timedelta(minutes=index),
-                longitude=-118.0,
-                latitude=33.7,
-                name="BETA FERRY",
-                vessel_type="60",
-                transceiver="B",
-            )
+        for index in range(60)
+    ]
+    rows.extend(
+        ais_row(
+            mmsi="366000002",
+            at=BASE + timedelta(minutes=index),
+            longitude=-118.0,
+            latitude=33.7,
+            name="BETA FERRY",
+            vessel_type="60",
+            transceiver="B",
         )
+        for index in range(10)
+    )
 
     records = [parse_row(row) for row in rows]
     test_database[collections.VESSEL_POSITIONS].insert_many(
