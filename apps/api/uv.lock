@@ -946,7 +946,6 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
-    { name = "orjson" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pymongo" },
@@ -977,7 +976,6 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.115" },
     { name = "langchain-core", marker = "extra == 'ai'", specifier = ">=0.3.20" },
     { name = "langgraph", marker = "extra == 'ai'", specifier = ">=0.2.50" },
-    { name = "orjson", specifier = ">=3.10" },
     { name = "pydantic", specifier = ">=2.9" },
     { name = "pydantic-settings", specifier = ">=2.6" },
     { name = "pymongo", specifier = ">=4.13" },

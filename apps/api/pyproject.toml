@@ -14,7 +14,6 @@ dependencies = [
     "pydantic-settings>=2.6",   # env-driven config with validation
     "pymongo>=4.13",            # official driver; 4.13+ ships GA AsyncMongoClient
     "typer>=0.15",              # the multi-subcommand data CLI needs real arg parsing
-    "orjson>=3.10",             # geo payloads are JSON-heavy; measurably faster encode
 ]
 
 [project.optional-dependencies]
@@ -118,4 +117,13 @@ markers = [
     "integration: requires a running MongoDB (uses MONGODB_TEST_DATABASE)",
     "slow: excluded from the default fast feedback loop",
 ]
-filterwarnings = ["error::DeprecationWarning"]
+# Our own deprecations are errors — that is how the deprecated ORJSONResponse
+# usage was caught. Third-party internals we cannot fix are ignored explicitly
+# rather than by relaxing the rule globally.
+filterwarnings = [
+    "error::DeprecationWarning",
+    # starlette.testclient imports a deprecated anyio alias at module scope.
+    "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning",
+    # starlette's own httpx-vs-httpx2 transition notice.
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:Warning",
+]

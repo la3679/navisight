@@ -90,8 +90,10 @@ def ais_row(
     mmsi: str = "366000001",
     *,
     at: datetime | None = None,
-    longitude: float = -74.0,
-    latitude: float = 40.0,
+    # str is accepted so fixtures can inject deliberately invalid values
+    # ("", "999") to exercise the rejection paths.
+    longitude: float | str = -74.0,
+    latitude: float | str = 40.0,
     sog: str = "10.0",
     name: str = "TEST VESSEL",
     vessel_type: str = "70",

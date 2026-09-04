@@ -30,9 +30,7 @@ pytestmark = pytest.mark.integration
 BASE = datetime(2025, 1, 8, 12, 0, 0, tzinfo=UTC)
 
 
-def run_ingest(
-    path: Path, database: Database[dict[str, Any]], **kwargs: Any
-) -> Any:
+def run_ingest(path: Path, database: Database[dict[str, Any]], **kwargs: Any) -> Any:
     """Ingest with test-friendly defaults."""
     kwargs.setdefault("dataset", "TEST")
     kwargs.setdefault("batch_size", 100)
@@ -141,9 +139,7 @@ class TestOutOfOrderSafety:
         last, so the guarantee has to hold across separate bulk writes, not just
         within one in-memory window."""
         rows = [ais_row(at=BASE + minutes(500), longitude=-60.0, latitude=45.0)]
-        rows += [
-            ais_row(at=BASE + minutes(i), longitude=-74.0 + i * 0.001) for i in range(400)
-        ]
+        rows += [ais_row(at=BASE + minutes(i), longitude=-74.0 + i * 0.001) for i in range(400)]
         source = write_ais_csv(tmp_path / "ais.csv", rows)
         run_ingest(source, test_database, batch_size=50, checkpoint_rows=100)
 
@@ -195,10 +191,10 @@ class TestRejectionAccounting:
             tmp_path / "ais.csv",
             [
                 ais_row(at=BASE),
-                ais_row(at=BASE + minutes(1), **{"base_date_time": "not-a-date"}),
-                ais_row(at=BASE + minutes(2), **{"longitude": ""}),
-                ais_row(at=BASE + minutes(3), **{"latitude": "999"}),
-                ais_row(at=BASE + minutes(4), **{"mmsi": ""}),
+                ais_row(at=BASE + minutes(1), base_date_time="not-a-date"),
+                ais_row(at=BASE + minutes(2), longitude=""),
+                ais_row(at=BASE + minutes(3), latitude="999"),
+                ais_row(at=BASE + minutes(4), mmsi=""),
             ],
         )
         stats = run_ingest(source, test_database)
@@ -234,7 +230,7 @@ class TestStoredShape:
         """Heading is absent in 50.6% of real rows. It must not become 0 or null."""
         source = write_ais_csv(
             tmp_path / "ais.csv",
-            [ais_row(at=BASE, **{"heading": "", "status": "", "sog": ""})],
+            [ais_row(at=BASE, heading="", status="", sog="")],
         )
         run_ingest(source, test_database)
 
@@ -295,7 +291,9 @@ class TestStoredShape:
                 ais_row(at=BASE, name="REAL NAME"),
                 ais_row(
                     at=BASE + minutes(1),
-                    **{"vessel_name": "", "call_sign": "", "vessel_type": ""},
+                    vessel_name="",
+                    call_sign="",
+                    vessel_type="",
                 ),
             ],
         )
