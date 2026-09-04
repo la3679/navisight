@@ -143,6 +143,13 @@ export function OperationsView() {
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] flex-col">
+      {/* Visually hidden, but present. The map is the whole screen here, so
+          there is no room for a visible page title — and a page whose topmost
+          heading is an h2 gives a screen-reader user a broken outline to
+          navigate by. Every other route has an h1; this one has to as well
+          (SOUL.md §12). */}
+      <h1 className="sr-only">Operations map</h1>
+
       {/* Filter bar: primary filters visible, nothing hidden behind a menu that
           the user has to discover. */}
       <div className="flex flex-wrap items-center gap-2 border-b border-[var(--ns-border)] bg-[var(--ns-surface)] px-3 py-2">
