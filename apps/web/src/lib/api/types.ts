@@ -154,6 +154,12 @@ export const trafficResponseSchema = z.object({
   start: z.string(),
   end: z.string(),
   totalObservations: z.number(),
+  /**
+   * When these figures were computed, if they came from the API's precomputed
+   * rollup; null when they were aggregated live for this request. The numbers
+   * are identical either way — this only says which path produced them.
+   */
+  computedAt: z.string().nullable().default(null),
 });
 
 export const categoryCountSchema = z.object({
@@ -180,6 +186,7 @@ export const speedDistributionSchema = z.object({
   buckets: z.array(speedBucketSchema),
   total: z.number(),
   note: z.string(),
+  computedAt: z.string().nullable().default(null),
 });
 
 export const activeVesselSchema = z.object({
