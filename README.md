@@ -152,7 +152,7 @@ Reproduce: `scripts/benchmarks/query_benchmarks.py`,
 [`docs/performance/`](docs/performance/). These are one machine's numbers —
 re-run them rather than quoting them.
 
-**Gates:** 194 backend tests, 12 frontend unit tests, 21 end-to-end tests;
+**Gates:** 194 backend tests, 12 frontend unit tests, 34 end-to-end tests;
 `ruff`, `ruff format`, `mypy --strict` over 51 files; `eslint`, `tsc`, and a
 production build of 8 routes. All run in CI, which never downloads the dataset
 and never needs an LLM key.
@@ -247,6 +247,7 @@ commit the dataset.
 | Area | Document |
 |---|---|
 | Engineering constitution | [`SOUL.md`](SOUL.md) |
+| Architecture | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
 | Decision records | [`docs/adr/`](docs/adr/) |
 | Local development | [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md) |
 | Data model | [`docs/database/DATA_MODEL.md`](docs/database/DATA_MODEL.md) |
