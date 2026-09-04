@@ -73,9 +73,7 @@ export function OperationsView() {
   // a fresh object every render would restart the animation on every render.
   const focus = React.useMemo(
     () =>
-      focusLon && focusLat
-        ? { longitude: Number(focusLon), latitude: Number(focusLat) }
-        : null,
+      focusLon && focusLat ? { longitude: Number(focusLon), latitude: Number(focusLat) } : null,
     [focusLon, focusLat],
   );
   const focusMmsi = searchParams.get("focus");
@@ -206,7 +204,7 @@ export function OperationsView() {
         <div className="flex flex-wrap items-center gap-4 border-b border-[var(--ns-border)] bg-[var(--ns-surface)] px-3 py-2.5">
           <fieldset className="flex flex-wrap items-center gap-1.5">
             <legend className="sr-only">Vessel type</legend>
-            <span className="mr-1 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+            <span className="mr-1 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
               Type
             </span>
             {TYPE_OPTIONS.map((option) => (
@@ -228,7 +226,7 @@ export function OperationsView() {
 
           <fieldset className="flex flex-wrap items-center gap-1.5">
             <legend className="sr-only">Speed</legend>
-            <span className="mr-1 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+            <span className="mr-1 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
               Speed
             </span>
             {SPEED_OPTIONS.map((option, index) => (
@@ -246,7 +244,7 @@ export function OperationsView() {
 
           <fieldset className="flex flex-wrap items-center gap-1.5">
             <legend className="sr-only">Transceiver class</legend>
-            <span className="mr-1 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+            <span className="mr-1 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
               Transceiver
             </span>
             {(["A", "B"] as const).map((value) => (
@@ -289,8 +287,7 @@ export function OperationsView() {
 
         {panelOpen ? (
           <aside
-            className="hidden w-[320px] shrink-0 overflow-y-auto border-l border-[var(--ns-border)]
-                       bg-[var(--ns-surface)] lg:block"
+            className="hidden w-[320px] shrink-0 overflow-y-auto border-l border-[var(--ns-border)] bg-[var(--ns-surface)] lg:block"
             aria-label="Selected vessel"
           >
             {selectedMmsi === null ? (
@@ -312,7 +309,9 @@ export function OperationsView() {
                     {detail.data ? (
                       <VesselName vessel={detail.data} />
                     ) : (
-                      <span className="font-[family-name:var(--font-mono)]">{selectedMmsi}</span>
+                      <span className="font-[family-name:var(--font-mono)]">
+                        {selectedMmsi}
+                      </span>
                     )}
                   </h2>
                   <Button
@@ -339,11 +338,13 @@ export function OperationsView() {
                 {detail.data ? (
                   <dl className="grid grid-cols-2 gap-2 border-t border-[var(--ns-border)] pt-3 text-xs">
                     <div>
-                      <dt className="text-[10px] uppercase text-[var(--ns-text-muted)]">Type</dt>
+                      <dt className="text-[10px] text-[var(--ns-text-muted)] uppercase">
+                        Type
+                      </dt>
                       <dd>{detail.data.vesselType.label}</dd>
                     </div>
                     <div>
-                      <dt className="text-[10px] uppercase text-[var(--ns-text-muted)]">
+                      <dt className="text-[10px] text-[var(--ns-text-muted)] uppercase">
                         Observations
                       </dt>
                       <dd className="tabular">{formatCount(detail.data.observationCount)}</dd>
@@ -377,7 +378,7 @@ export function OperationsView() {
               <p className="truncate text-sm font-medium">
                 {detail.data ? <VesselName vessel={detail.data} /> : selectedMmsi}
               </p>
-              <p className="text-[11px] text-[var(--ns-text-muted)] tabular">
+              <p className="tabular text-[11px] text-[var(--ns-text-muted)]">
                 {formatSpeed(latest.data?.navigation.speedOverGroundKnots ?? null)}
               </p>
             </div>

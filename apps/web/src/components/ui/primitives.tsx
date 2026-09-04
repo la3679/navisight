@@ -31,8 +31,7 @@ const buttonVariants = cva(
           "hover:border-[var(--ns-border-strong)] hover:bg-[var(--ns-surface-overlay)]",
         ghost:
           "text-[var(--ns-text-secondary)] hover:bg-[var(--ns-surface-raised)] hover:text-[var(--ns-text)]",
-        danger:
-          "bg-[var(--ns-critical)] text-white hover:opacity-90",
+        danger: "bg-[var(--ns-critical)] text-white hover:opacity-90",
       },
       size: {
         sm: "h-8 px-2.5 text-xs [&_svg]:size-3.5",
@@ -46,8 +45,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {}
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, ...props }, ref) => (
@@ -83,10 +81,11 @@ export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHead
   );
 }
 
-export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p className={cn("mt-1 text-xs text-[var(--ns-text-muted)]", className)} {...props} />
-  );
+export function CardDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={cn("mt-1 text-xs text-[var(--ns-text-muted)]", className)} {...props} />;
 }
 
 export function CardBody({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -132,30 +131,27 @@ export function Badge({
 
 export function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cn("ns-skeleton rounded-md", className)}
-      aria-hidden="true"
-      {...props}
-    />
+    <div className={cn("ns-skeleton rounded-md", className)} aria-hidden="true" {...props} />
   );
 }
 
 /* ----------------------------------------------------------------- Input */
 
-export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
-  ({ className, ...props }, ref) => (
-    <input
-      ref={ref}
-      className={cn(
-        "h-9 w-full rounded-md border border-[var(--ns-border)] bg-[var(--ns-surface-raised)]",
-        "px-3 text-sm text-[var(--ns-text)] placeholder:text-[var(--ns-text-muted)]",
-        "transition-colors hover:border-[var(--ns-border-strong)] disabled:opacity-50",
-        className,
-      )}
-      {...props}
-    />
-  ),
-);
+export const Input = React.forwardRef<
+  HTMLInputElement,
+  React.InputHTMLAttributes<HTMLInputElement>
+>(({ className, ...props }, ref) => (
+  <input
+    ref={ref}
+    className={cn(
+      "h-9 w-full rounded-md border border-[var(--ns-border)] bg-[var(--ns-surface-raised)]",
+      "px-3 text-sm text-[var(--ns-text)] placeholder:text-[var(--ns-text-muted)]",
+      "transition-colors hover:border-[var(--ns-border-strong)] disabled:opacity-50",
+      className,
+    )}
+    {...props}
+  />
+));
 Input.displayName = "Input";
 
 /* ---------------------------------------------------------------- Fields */
@@ -179,13 +175,13 @@ export function Field({
 }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+      <dt className="text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
         {label}
       </dt>
       <dd
         className={cn(
           "mt-0.5 truncate text-sm text-[var(--ns-text)]",
-          mono && "font-[family-name:var(--font-mono)] tabular",
+          mono && "tabular font-[family-name:var(--font-mono)]",
         )}
         title={typeof value === "string" ? value : undefined}
       >
@@ -195,9 +191,7 @@ export function Field({
           <div> there may contain only <dt> and <dd> — a <p> makes the list
           invalid, which is a real defect rather than pedantry: assistive
           technology pairs terms with descriptions using that structure. */}
-      {hint ? (
-        <dd className="mt-0.5 text-[11px] text-[var(--ns-text-muted)]">{hint}</dd>
-      ) : null}
+      {hint ? <dd className="mt-0.5 text-[11px] text-[var(--ns-text-muted)]">{hint}</dd> : null}
     </div>
   );
 }

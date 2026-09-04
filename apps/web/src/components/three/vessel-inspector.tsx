@@ -7,7 +7,13 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/primitives";
 import { usePrefersReducedMotion, useWebGLSupport } from "@/hooks/client-env";
-import { EM_DASH, bearingToCardinal, formatBearing, formatDraft, formatMeters } from "@/lib/format";
+import {
+  EM_DASH,
+  bearingToCardinal,
+  formatBearing,
+  formatDraft,
+  formatMeters,
+} from "@/lib/format";
 import { VesselHull } from "./vessel-hull";
 
 /**
@@ -104,7 +110,13 @@ export function VesselInspector({
                 />
               </mesh>
 
-              <group rotation={[0, headingDegrees !== null ? -(headingDegrees * Math.PI) / 180 : 0, 0]}>
+              <group
+                rotation={[
+                  0,
+                  headingDegrees !== null ? -(headingDegrees * Math.PI) / 180 : 0,
+                  0,
+                ]}
+              >
                 <VesselHull
                   lengthMeters={length}
                   beamMeters={beam}
@@ -128,7 +140,7 @@ export function VesselInspector({
             <Button
               size="sm"
               variant="secondary"
-              className="absolute right-2 top-2"
+              className="absolute top-2 right-2"
               onClick={() => setResetKey((key) => key + 1)}
             >
               <RotateCcw aria-hidden="true" />
@@ -150,28 +162,28 @@ export function VesselInspector({
 
       <dl className="mt-3 grid grid-cols-4 gap-2 text-center">
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <dt className="text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Length
           </dt>
-          <dd className="text-xs tabular">{formatMeters(lengthMeters)}</dd>
+          <dd className="tabular text-xs">{formatMeters(lengthMeters)}</dd>
         </div>
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <dt className="text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Beam
           </dt>
-          <dd className="text-xs tabular">{formatMeters(widthMeters)}</dd>
+          <dd className="tabular text-xs">{formatMeters(widthMeters)}</dd>
         </div>
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <dt className="text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Draft
           </dt>
-          <dd className="text-xs tabular">{formatDraft(draftMeters)}</dd>
+          <dd className="tabular text-xs">{formatDraft(draftMeters)}</dd>
         </div>
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <dt className="text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Heading
           </dt>
-          <dd className="text-xs tabular">
+          <dd className="tabular text-xs">
             {headingDegrees !== null ? formatBearing(headingDegrees) : EM_DASH}
           </dd>
         </div>

@@ -106,7 +106,7 @@ export function HeadingArrow({
       <span className="sr-only">
         {`${Math.round(bearing)} degrees, ${bearingToCardinal(bearing)}, from ${source}`}
       </span>
-      <span aria-hidden="true" className="text-xs tabular text-[var(--ns-text-secondary)]">
+      <span aria-hidden="true" className="tabular text-xs text-[var(--ns-text-secondary)]">
         {formatBearing(bearing)}
       </span>
     </span>
@@ -130,7 +130,7 @@ export function VesselResultRow({
           <VesselName vessel={vessel} />
         </p>
         <div className="mt-0.5 flex items-center gap-2">
-          <span className="font-[family-name:var(--font-mono)] text-[11px] tabular text-[var(--ns-text-muted)]">
+          <span className="tabular font-[family-name:var(--font-mono)] text-[11px] text-[var(--ns-text-muted)]">
             {vessel.mmsi}
           </span>
           <VesselTypeChip label={vessel.vesselType.label} family={vessel.vesselType.family} />
@@ -174,42 +174,39 @@ export function LatestObservationSummary({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-baseline justify-between gap-2">
-        <span className="text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+        <span className="text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
           Latest observation in dataset
         </span>
         <Badge tone="neutral">{observation.transceiverClass ?? EM_DASH}</Badge>
       </div>
-      <p className="font-[family-name:var(--font-mono)] text-xs tabular text-[var(--ns-text-secondary)]">
+      <p className="tabular font-[family-name:var(--font-mono)] text-xs text-[var(--ns-text-secondary)]">
         {formatTimestamp(observation.timestamp)}
       </p>
-      <p className="font-[family-name:var(--font-mono)] text-xs tabular text-[var(--ns-text-secondary)]">
-        {formatCoordinates(
-          observation.coordinates.longitude,
-          observation.coordinates.latitude,
-        )}
+      <p className="tabular font-[family-name:var(--font-mono)] text-xs text-[var(--ns-text-secondary)]">
+        {formatCoordinates(observation.coordinates.longitude, observation.coordinates.latitude)}
       </p>
       <dl className="grid grid-cols-3 gap-2 pt-1">
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <dt className="text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Speed
           </dt>
-          <dd className="text-sm tabular">
+          <dd className="tabular text-sm">
             {formatSpeed(observation.navigation.speedOverGroundKnots)}
           </dd>
         </div>
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <dt className="text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Course
           </dt>
-          <dd className="text-sm tabular">
+          <dd className="tabular text-sm">
             {formatBearing(observation.navigation.courseOverGroundDegrees)}
           </dd>
         </div>
         <div>
-          <dt className="text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <dt className="text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Heading
           </dt>
-          <dd className="text-sm tabular">
+          <dd className="tabular text-sm">
             {formatBearing(observation.navigation.headingDegrees)}
           </dd>
         </div>

@@ -35,14 +35,10 @@ import { cn } from "@/lib/utils";
 function Payload({ label, value }: { label: string; value: unknown }) {
   return (
     <div className="min-w-0">
-      <p className="mb-1 text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+      <p className="mb-1 text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
         {label}
       </p>
-      <pre
-        className="max-h-64 overflow-auto rounded border border-[var(--ns-border)]
-                   bg-[var(--ns-bg)] p-2 font-[family-name:var(--font-mono)]
-                   text-[11px] leading-relaxed text-[var(--ns-text-secondary)]"
-      >
+      <pre className="max-h-64 overflow-auto rounded border border-[var(--ns-border)] bg-[var(--ns-bg)] p-2 font-[family-name:var(--font-mono)] text-[11px] leading-relaxed text-[var(--ns-text-secondary)]">
         {JSON.stringify(value, null, 2)}
       </pre>
     </div>
@@ -62,10 +58,9 @@ function ToolCallRow({ call, index }: { call: AgentToolCall; index: number }) {
         >
           <ChevronRight
             aria-hidden="true"
-            className="size-3.5 shrink-0 text-[var(--ns-text-muted)] transition-transform
-                       group-open:rotate-90"
+            className="size-3.5 shrink-0 text-[var(--ns-text-muted)] transition-transform group-open:rotate-90"
           />
-          <span className="shrink-0 font-[family-name:var(--font-mono)] text-[11px] tabular text-[var(--ns-text-muted)]">
+          <span className="tabular shrink-0 font-[family-name:var(--font-mono)] text-[11px] text-[var(--ns-text-muted)]">
             {index + 1}
           </span>
           <span className="min-w-0 flex-1 truncate font-[family-name:var(--font-mono)] text-xs text-[var(--ns-text)]">
@@ -76,7 +71,7 @@ function ToolCallRow({ call, index }: { call: AgentToolCall; index: number }) {
           ) : (
             <Badge tone="warning">refused</Badge>
           )}
-          <span className="shrink-0 font-[family-name:var(--font-mono)] text-[10px] tabular text-[var(--ns-text-muted)]">
+          <span className="tabular shrink-0 font-[family-name:var(--font-mono)] text-[10px] text-[var(--ns-text-muted)]">
             {call.durationMs.toFixed(0)} ms
           </span>
         </summary>
@@ -87,7 +82,7 @@ function ToolCallRow({ call, index }: { call: AgentToolCall; index: number }) {
             <Payload label="Result" value={call.result} />
           ) : (
             <div>
-              <p className="mb-1 text-[10px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+              <p className="mb-1 text-[10px] tracking-wide text-[var(--ns-text-muted)] uppercase">
                 Why it was refused
               </p>
               <p className="text-xs leading-relaxed text-[var(--ns-warning)]">{call.error}</p>
@@ -108,8 +103,8 @@ export function EvidenceList({ evidence }: { evidence: AgentToolCall[] }) {
           className="mt-px size-3 shrink-0 text-[var(--ns-warning)]"
         />
         <span>
-          No tool ran for this answer, so nothing in it was read from the archive. Treat it
-          as unsupported.
+          No tool ran for this answer, so nothing in it was read from the archive. Treat it as
+          unsupported.
         </span>
       </p>
     );

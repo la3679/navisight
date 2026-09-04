@@ -56,7 +56,9 @@ test("every claim carries a support label", async ({ page }) => {
   expect(await labels.count()).toBeGreaterThan(0);
 });
 
-test("the deterministic stub declares itself rather than posing as a model", async ({ page }) => {
+test("the deterministic stub declares itself rather than posing as a model", async ({
+  page,
+}) => {
   await page.goto("/copilot");
   await expect(page.getByText(/deterministic stub is answering, not a model/i)).toBeVisible();
 });
@@ -73,7 +75,9 @@ test("the tool catalogue is published before anything is asked", async ({ page }
   await expect(page.getByText(/it cannot write a database query/i)).toBeVisible();
 });
 
-test("a keyboard-submitted question works the same as the example buttons", async ({ page }) => {
+test("a keyboard-submitted question works the same as the example buttons", async ({
+  page,
+}) => {
   await page.goto("/copilot");
 
   const box = page.getByLabel(/ask a question about the archived ais data/i);
@@ -85,7 +89,9 @@ test("a keyboard-submitted question works the same as the example buttons", asyn
   });
 });
 
-test("a vessel name shaped like an instruction is quoted as data, not obeyed", async ({ page }) => {
+test("a vessel name shaped like an instruction is quoted as data, not obeyed", async ({
+  page,
+}) => {
   await page.goto("/copilot");
 
   const box = page.getByLabel(/ask a question about the archived ais data/i);
@@ -100,7 +106,9 @@ test("a vessel name shaped like an instruction is quoted as data, not obeyed", a
   await expect(page.getByText(/^Evidence/i).first()).toBeVisible();
 });
 
-test("a question that is too short is refused before it reaches a provider", async ({ page }) => {
+test("a question that is too short is refused before it reaches a provider", async ({
+  page,
+}) => {
   await page.goto("/copilot");
 
   const box = page.getByLabel(/ask a question about the archived ais data/i);

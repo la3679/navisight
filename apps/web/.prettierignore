@@ -5,3 +5,9 @@ coverage/
 playwright-report/
 test-results/
 public/maplibre/
+
+# Third-party data, not source. Prettier expands this 96 KB Natural Earth
+# GeoJSON into 6,500+ lines, which is both a pointless diff and a larger asset
+# served to every visitor. It is vendored verbatim on purpose — see
+# docs/THIRD_PARTY_ASSETS.md.
+public/geo/

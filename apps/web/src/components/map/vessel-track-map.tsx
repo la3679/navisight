@@ -142,11 +142,7 @@ export function VesselTrackMap({ track }: { track: VesselTrack }) {
         ) : null}
       </Map>
 
-      <div
-        className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-3
-                   rounded-md bg-[color-mix(in_oklab,var(--ns-surface)_88%,transparent)]
-                   px-2 py-1 text-[10px] text-[var(--ns-text-secondary)] backdrop-blur"
-      >
+      <div className="pointer-events-none absolute bottom-2 left-2 flex items-center gap-3 rounded-md bg-[color-mix(in_oklab,var(--ns-surface)_88%,transparent)] px-2 py-1 text-[10px] text-[var(--ns-text-secondary)] backdrop-blur">
         <span className="inline-flex items-center gap-1.5">
           <span className="size-2 rounded-full bg-[var(--ns-text-muted)]" aria-hidden="true" />
           First

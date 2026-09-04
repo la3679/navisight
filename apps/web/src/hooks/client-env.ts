@@ -41,7 +41,7 @@ function detectWebGL(): boolean {
     const canvas = document.createElement("canvas");
     webglSupport = Boolean(
       window.WebGLRenderingContext &&
-        (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")),
+      (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")),
     );
   } catch {
     webglSupport = false;
@@ -57,11 +57,7 @@ function detectWebGL(): boolean {
  * fallback, never a blank box (SOUL.md §11).
  */
 export function useWebGLSupport(): boolean {
-  return React.useSyncExternalStore(
-    noopSubscribe,
-    detectWebGL,
-    () => false,
-  );
+  return React.useSyncExternalStore(noopSubscribe, detectWebGL, () => false);
 }
 
 /**

@@ -95,10 +95,7 @@ export function GlobalSearch() {
       >
         <Search className="size-4 shrink-0" aria-hidden="true" />
         <span className="flex-1 truncate">Search vessels by name, MMSI, IMO, or call sign</span>
-        <kbd
-          className="hidden rounded border border-[var(--ns-border)] px-1.5 py-0.5
-                     font-[family-name:var(--font-mono)] text-[10px] sm:inline"
-        >
+        <kbd className="hidden rounded border border-[var(--ns-border)] px-1.5 py-0.5 font-[family-name:var(--font-mono)] text-[10px] sm:inline">
           Ctrl K
         </kbd>
       </button>
@@ -108,7 +105,7 @@ export function GlobalSearch() {
         onOpenChange={setOpen}
         label="Search vessels and navigate"
         className={cn(
-          "fixed left-1/2 top-[12vh] z-50 w-[min(92vw,560px)] -translate-x-1/2",
+          "fixed top-[12vh] left-1/2 z-50 w-[min(92vw,560px)] -translate-x-1/2",
           "overflow-hidden rounded-xl border border-[var(--ns-border-strong)]",
           "bg-[var(--ns-surface-overlay)] shadow-2xl",
         )}
@@ -120,8 +117,7 @@ export function GlobalSearch() {
             value={query}
             onValueChange={setQuery}
             placeholder="Vessel name, MMSI, IMO, call sign…"
-            className="h-12 flex-1 bg-transparent text-sm text-[var(--ns-text)] outline-none
-                       placeholder:text-[var(--ns-text-muted)]"
+            className="h-12 flex-1 bg-transparent text-sm text-[var(--ns-text)] outline-none placeholder:text-[var(--ns-text-muted)]"
           />
           {isFetching ? (
             <Loader2
@@ -159,11 +155,7 @@ export function GlobalSearch() {
           {data && data.length > 0 ? (
             <Command.Group
               heading="Vessels"
-              className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5
-                         [&_[cmdk-group-heading]]:text-[10px]
-                         [&_[cmdk-group-heading]]:uppercase
-                         [&_[cmdk-group-heading]]:tracking-wide
-                         [&_[cmdk-group-heading]]:text-[var(--ns-text-muted)]"
+              className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:tracking-wide [&_[cmdk-group-heading]]:text-[var(--ns-text-muted)] [&_[cmdk-group-heading]]:uppercase"
             >
               {data.map((vessel) => (
                 <Command.Item
@@ -175,11 +167,14 @@ export function GlobalSearch() {
                     "data-[selected=true]:bg-[var(--ns-surface-raised)]",
                   )}
                 >
-                  <Ship className="size-4 shrink-0 text-[var(--ns-text-muted)]" aria-hidden="true" />
+                  <Ship
+                    className="size-4 shrink-0 text-[var(--ns-text-muted)]"
+                    aria-hidden="true"
+                  />
                   <span className="min-w-0 flex-1 truncate text-[var(--ns-text)]">
                     {vessel.name ?? EM_DASH}
                   </span>
-                  <span className="shrink-0 font-[family-name:var(--font-mono)] text-[11px] text-[var(--ns-text-muted)] tabular">
+                  <span className="tabular shrink-0 font-[family-name:var(--font-mono)] text-[11px] text-[var(--ns-text-muted)]">
                     {vessel.mmsi}
                   </span>
                   <span className="hidden shrink-0 text-[11px] text-[var(--ns-text-muted)] sm:inline">
@@ -192,11 +187,7 @@ export function GlobalSearch() {
 
           <Command.Group
             heading="Go to"
-            className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5
-                       [&_[cmdk-group-heading]]:text-[10px]
-                       [&_[cmdk-group-heading]]:uppercase
-                       [&_[cmdk-group-heading]]:tracking-wide
-                       [&_[cmdk-group-heading]]:text-[var(--ns-text-muted)]"
+            className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:tracking-wide [&_[cmdk-group-heading]]:text-[var(--ns-text-muted)] [&_[cmdk-group-heading]]:uppercase"
           >
             {NAVIGATION.map((item) => (
               <Command.Item

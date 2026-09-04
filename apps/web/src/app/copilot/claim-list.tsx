@@ -77,8 +77,7 @@ export function ClaimKindBadge({ kind }: { kind: AgentClaimKind }) {
   const Icon = meta.icon;
   return (
     <span
-      className="inline-flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5
-                 text-[10px] font-medium uppercase tracking-wide"
+      className="inline-flex shrink-0 items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] font-medium tracking-wide uppercase"
       style={{
         color: meta.textColor,
         borderColor: `color-mix(in oklab, ${meta.color} 40%, transparent)`,
@@ -96,8 +95,8 @@ export function ClaimList({ claims }: { claims: AgentClaim[] }) {
   if (claims.length === 0) {
     return (
       <p className="text-xs leading-relaxed text-[var(--ns-text-muted)]">
-        The model did not label any claims for this answer. Read it as unattributed prose
-        and check it against the evidence below.
+        The model did not label any claims for this answer. Read it as unattributed prose and
+        check it against the evidence below.
       </p>
     );
   }

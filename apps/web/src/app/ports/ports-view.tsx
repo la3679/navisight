@@ -6,7 +6,12 @@ import Link from "next/link";
 import * as React from "react";
 
 import { Badge, Button, Card, CardBody, Input, Skeleton } from "@/components/ui/primitives";
-import { EmptyState, ErrorState, LoadingRows, NotConfiguredState } from "@/components/ui/states";
+import {
+  EmptyState,
+  ErrorState,
+  LoadingRows,
+  NotConfiguredState,
+} from "@/components/ui/states";
 import { ApiClientError, api } from "@/lib/api/client";
 import type { Port } from "@/lib/api/types";
 import { formatCoordinates, formatDistance, formatSpeed, formatTimestamp } from "@/lib/format";
@@ -67,7 +72,7 @@ function PortRow({
             {[port.country, port.unlocode].filter(Boolean).join(" · ") || "—"}
           </span>
         </span>
-        <span className="shrink-0 font-[family-name:var(--font-mono)] text-[10px] tabular text-[var(--ns-text-muted)]">
+        <span className="tabular shrink-0 font-[family-name:var(--font-mono)] text-[10px] text-[var(--ns-text-muted)]">
           {formatCoordinates(port.coordinates.longitude, port.coordinates.latitude)}
         </span>
       </button>
@@ -98,8 +103,8 @@ export function PortsView() {
     <header>
       <h1 className="text-xl font-semibold tracking-tight">Ports</h1>
       <p className="mt-1 max-w-2xl text-sm text-[var(--ns-text-secondary)]">
-        Port reference data is optional and supplied by you. NaviSight does not ship a
-        gazetteer — the AIS archive contains no port information.
+        Port reference data is optional and supplied by you. NaviSight does not ship a gazetteer
+        — the AIS archive contains no port information.
       </p>
     </header>
   );
@@ -111,8 +116,8 @@ export function PortsView() {
         <NotConfiguredState title="No port reference data has been loaded">
           <p>
             NaviSight ships no port list. Inventing one would place fabricated place names
-            beside real vessel positions, so this surface stays empty until you load a
-            registry you trust.
+            beside real vessel positions, so this surface stays empty until you load a registry
+            you trust.
           </p>
           <pre className="mt-3 overflow-x-auto rounded bg-[var(--ns-surface-raised)] p-2 text-left font-[family-name:var(--font-mono)] text-[11px]">
             {`cd apps/api
@@ -121,10 +126,10 @@ uv run navisight-data ports load <file>`}
           <p className="mt-3">
             A CSV needs <code>id</code>, <code>name</code>, <code>latitude</code>, and{" "}
             <code>longitude</code>; <code>country</code>, <code>unlocode</code>,{" "}
-            <code>harbourSize</code> and <code>harbourType</code> are used when present, and
-            any other column is ignored. A GeoJSON <code>FeatureCollection</code> of points
-            works too. The U.S. NGA World Port Index is public domain and maps onto this
-            schema directly.
+            <code>harbourSize</code> and <code>harbourType</code> are used when present, and any
+            other column is ignored. A GeoJSON <code>FeatureCollection</code> of points works
+            too. The U.S. NGA World Port Index is public domain and maps onto this schema
+            directly.
           </p>
         </NotConfiguredState>
 
@@ -142,9 +147,8 @@ uv run navisight-data ports load <file>`}
               </li>
             </ul>
             <p className="mt-3 text-[11px] leading-relaxed text-[var(--ns-text-muted)]">
-              Proximity is not a port call. AIS records where a vessel was, not that it
-              berthed, loaded, or was bound anywhere — NaviSight will not infer one from the
-              other.
+              Proximity is not a port call. AIS records where a vessel was, not that it berthed,
+              loaded, or was bound anywhere — NaviSight will not infer one from the other.
             </p>
           </CardBody>
         </Card>
@@ -166,7 +170,7 @@ uv run navisight-data ports load <file>`}
               <span className="sr-only">Search ports</span>
               <Search
                 aria-hidden="true"
-                className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[var(--ns-text-muted)]"
+                className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-[var(--ns-text-muted)]"
               />
               <Input
                 value={query}
@@ -231,7 +235,7 @@ uv run navisight-data ports load <file>`}
                     </h2>
                     {selected ? (
                       <p className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[var(--ns-text-muted)]">
-                        <span className="font-[family-name:var(--font-mono)] tabular">
+                        <span className="tabular font-[family-name:var(--font-mono)]">
                           {formatCoordinates(
                             selected.coordinates.longitude,
                             selected.coordinates.latitude,
@@ -249,9 +253,7 @@ uv run navisight-data ports load <file>`}
                   {selected ? (
                     <Link
                       href={`/operations?lon=${selected.coordinates.longitude}&lat=${selected.coordinates.latitude}`}
-                      className="inline-flex h-8 items-center gap-1.5 rounded-md border
-                                 border-[var(--ns-border)] px-2.5 text-xs font-medium
-                                 hover:bg-[var(--ns-surface-raised)]"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[var(--ns-border)] px-2.5 text-xs font-medium hover:bg-[var(--ns-surface-raised)]"
                     >
                       <MapPin className="size-3.5" aria-hidden="true" />
                       Show on map
@@ -261,7 +263,7 @@ uv run navisight-data ports load <file>`}
 
                 <fieldset className="flex flex-wrap items-center gap-1.5">
                   <legend className="sr-only">Search radius</legend>
-                  <span className="mr-1 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+                  <span className="mr-1 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
                     Radius
                   </span>
                   {RADIUS_OPTIONS.map((option) => (
@@ -341,13 +343,13 @@ uv run navisight-data ports load <file>`}
                             <td className="px-2.5 py-1.5 text-[var(--ns-text-secondary)]">
                               {entry.vessel.vesselType.label}
                             </td>
-                            <td className="px-2.5 py-1.5 text-right font-[family-name:var(--font-mono)] tabular">
+                            <td className="tabular px-2.5 py-1.5 text-right font-[family-name:var(--font-mono)]">
                               {formatDistance(entry.distanceKm)}
                             </td>
-                            <td className="px-2.5 py-1.5 text-right font-[family-name:var(--font-mono)] tabular">
+                            <td className="tabular px-2.5 py-1.5 text-right font-[family-name:var(--font-mono)]">
                               {formatSpeed(entry.speedOverGroundKnots)}
                             </td>
-                            <td className="px-2.5 py-1.5 text-right font-[family-name:var(--font-mono)] tabular text-[var(--ns-text-muted)]">
+                            <td className="tabular px-2.5 py-1.5 text-right font-[family-name:var(--font-mono)] text-[var(--ns-text-muted)]">
                               {formatTimestamp(entry.timestamp)}
                             </td>
                           </tr>
@@ -359,8 +361,8 @@ uv run navisight-data ports load <file>`}
 
                 {activity.data?.truncated ? (
                   <p className="text-[11px] text-[var(--ns-warning)]">
-                    More vessels were inside this radius than are listed. Narrow the radius
-                    to see a complete set.
+                    More vessels were inside this radius than are listed. Narrow the radius to
+                    see a complete set.
                   </p>
                 ) : null}
               </div>

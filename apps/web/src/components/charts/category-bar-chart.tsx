@@ -52,7 +52,7 @@ export function CategoryBarChart({
           <li
             key={category.key}
             className={cn(
-              "group rounded-sm px-1 py-1 outline-none transition-colors",
+              "group rounded-sm px-1 py-1 transition-colors outline-none",
               "focus-visible:ring-2 focus-visible:ring-[var(--ns-accent)]",
               isActive ? "bg-[var(--ns-surface-raised)]" : "",
             )}
@@ -65,10 +65,13 @@ export function CategoryBarChart({
             onBlur={() => setActive(null)}
           >
             <div className="flex items-baseline justify-between gap-3 text-xs">
-              <span className="min-w-0 truncate text-[var(--ns-text-secondary)]" title={category.label}>
+              <span
+                className="min-w-0 truncate text-[var(--ns-text-secondary)]"
+                title={category.label}
+              >
                 {category.label}
               </span>
-              <span className="shrink-0 font-[family-name:var(--font-mono)] tabular text-[var(--ns-text)]">
+              <span className="tabular shrink-0 font-[family-name:var(--font-mono)] text-[var(--ns-text)]">
                 {formatCount(category.count)}
                 <span className="ml-1.5 text-[var(--ns-text-muted)]">
                   {formatPercent((category.count / Math.max(1, total)) * 100)}

@@ -63,7 +63,10 @@ export function DatasetView() {
       {/* The historical disclaimer, stated once, prominently, in plain words. */}
       <Card className="border-[color-mix(in_oklab,var(--ns-info)_35%,transparent)] bg-[color-mix(in_oklab,var(--ns-info)_7%,transparent)]">
         <CardBody className="flex gap-3 pt-4">
-          <History className="mt-0.5 size-5 shrink-0 text-[var(--ns-info)]" aria-hidden="true" />
+          <History
+            className="mt-0.5 size-5 shrink-0 text-[var(--ns-info)]"
+            aria-hidden="true"
+          />
           <div className="space-y-1.5 text-sm">
             <p className="font-medium text-[var(--ns-text)]">
               This is a historical archive, not a live feed.
@@ -94,33 +97,33 @@ export function DatasetView() {
           <section className="grid gap-4 sm:grid-cols-3">
             <Card>
               <CardBody className="pt-4">
-                <p className="text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+                <p className="text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
                   Position observations
                 </p>
-                <p className="mt-1 text-2xl font-semibold tabular">
+                <p className="tabular mt-1 text-2xl font-semibold">
                   {formatCount(data.counts.positions)}
                 </p>
               </CardBody>
             </Card>
             <Card>
               <CardBody className="pt-4">
-                <p className="text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+                <p className="text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
                   Distinct vessels
                 </p>
-                <p className="mt-1 text-2xl font-semibold tabular">
+                <p className="tabular mt-1 text-2xl font-semibold">
                   {formatCount(data.counts.vessels)}
                 </p>
               </CardBody>
             </Card>
             <Card>
               <CardBody className="pt-4">
-                <p className="text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+                <p className="text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
                   Coverage (UTC)
                 </p>
-                <p className="mt-1 text-sm font-medium tabular">
+                <p className="tabular mt-1 text-sm font-medium">
                   {formatTimestamp(data.coverage.start, { seconds: false })}
                 </p>
-                <p className="text-sm font-medium tabular">
+                <p className="tabular text-sm font-medium">
                   {formatTimestamp(data.coverage.end, { seconds: false })}
                 </p>
               </CardBody>
@@ -138,11 +141,7 @@ export function DatasetView() {
             <CardBody>
               <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <Field label="Dataset" value={data.dataset} />
-                <Field
-                  label="File"
-                  value={data.lastIngestion?.sourceFile ?? "—"}
-                  mono
-                />
+                <Field label="File" value={data.lastIngestion?.sourceFile ?? "—"} mono />
                 <Field
                   label="Publisher"
                   value={
@@ -176,7 +175,9 @@ export function DatasetView() {
                   <Field
                     label="Status"
                     value={
-                      <Badge tone={data.lastIngestion.status === "completed" ? "accent" : "warning"}>
+                      <Badge
+                        tone={data.lastIngestion.status === "completed" ? "accent" : "warning"}
+                      >
                         {data.lastIngestion.status === "completed" ? (
                           <CheckCircle2 className="size-3" aria-hidden="true" />
                         ) : null}
@@ -247,23 +248,36 @@ export function DatasetView() {
                       </caption>
                       <thead>
                         <tr className="border-b border-[var(--ns-border)] text-left">
-                          <th scope="col" className="py-2 pr-4 font-medium text-[var(--ns-text-secondary)]">
+                          <th
+                            scope="col"
+                            className="py-2 pr-4 font-medium text-[var(--ns-text-secondary)]"
+                          >
                             Field
                           </th>
-                          <th scope="col" className="py-2 pr-4 text-right font-medium text-[var(--ns-text-secondary)]">
+                          <th
+                            scope="col"
+                            className="py-2 pr-4 text-right font-medium text-[var(--ns-text-secondary)]"
+                          >
                             Present
                           </th>
-                          <th scope="col" className="py-2 pr-4 text-right font-medium text-[var(--ns-text-secondary)]">
+                          <th
+                            scope="col"
+                            className="py-2 pr-4 text-right font-medium text-[var(--ns-text-secondary)]"
+                          >
                             Missing
                           </th>
-                          <th scope="col" className="py-2 text-right font-medium text-[var(--ns-text-secondary)]">
+                          <th
+                            scope="col"
+                            className="py-2 text-right font-medium text-[var(--ns-text-secondary)]"
+                          >
                             Missing %
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         {quality.data.fields.map((field) => {
-                          const notable = NOTABLE_FIELDS.has(field.field) && field.missingPercent > 10;
+                          const notable =
+                            NOTABLE_FIELDS.has(field.field) && field.missingPercent > 10;
                           return (
                             <tr
                               key={field.field}
@@ -275,15 +289,15 @@ export function DatasetView() {
                               >
                                 {field.field}
                               </th>
-                              <td className="py-1.5 pr-4 text-right tabular text-[var(--ns-text-secondary)]">
+                              <td className="tabular py-1.5 pr-4 text-right text-[var(--ns-text-secondary)]">
                                 {formatCount(field.present)}
                               </td>
-                              <td className="py-1.5 pr-4 text-right tabular text-[var(--ns-text-secondary)]">
+                              <td className="tabular py-1.5 pr-4 text-right text-[var(--ns-text-secondary)]">
                                 {formatCount(field.missing)}
                               </td>
                               <td
                                 className={cn(
-                                  "py-1.5 text-right tabular",
+                                  "tabular py-1.5 text-right",
                                   notable
                                     ? "font-medium text-[var(--ns-warning)]"
                                     : "text-[var(--ns-text-secondary)]",
@@ -336,7 +350,10 @@ export function DatasetView() {
               "NaviSight is not a navigation, collision-avoidance, or safety-critical system, and must not be used as one.",
             ].map((item) => (
               <li key={item} className="flex gap-2">
-                <span aria-hidden="true" className="mt-2 size-1 shrink-0 rounded-full bg-[var(--ns-text-muted)]" />
+                <span
+                  aria-hidden="true"
+                  className="mt-2 size-1 shrink-0 rounded-full bg-[var(--ns-text-muted)]"
+                />
                 <span>{item}</span>
               </li>
             ))}

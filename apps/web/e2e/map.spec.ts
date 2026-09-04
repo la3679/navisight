@@ -66,10 +66,10 @@ test("the operations map queries its viewport and draws the result", async ({ pa
   const readout = page.getByText(/vessels in view|aggregated into/i);
   await expect(readout).toBeVisible({ timeout: 30_000 });
   await expect
-    .poll(
-      async () => Number(/(\d+)/.exec((await readout.textContent()) ?? "")?.[1] ?? 0),
-      { timeout: 30_000, message: "the viewport query returned no vessels" },
-    )
+    .poll(async () => Number(/(\d+)/.exec((await readout.textContent()) ?? "")?.[1] ?? 0), {
+      timeout: 30_000,
+      message: "the viewport query returned no vessels",
+    })
     .toBeGreaterThan(0);
 
   await expect(page.getByText(/loading vessels/i)).toHaveCount(0, { timeout: 30_000 });

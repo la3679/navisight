@@ -73,8 +73,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         >
           <Link
             href="/"
-            className="mb-3 flex size-10 items-center justify-center rounded-lg
-                       bg-[color-mix(in_oklab,var(--ns-accent)_14%,transparent)]"
+            className="mb-3 flex size-10 items-center justify-center rounded-lg bg-[color-mix(in_oklab,var(--ns-accent)_14%,transparent)]"
             aria-label="NaviSight home"
           >
             <Ship className="size-5 text-[var(--ns-accent)]" aria-hidden="true" />
@@ -101,7 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r",
+                    "absolute top-1/2 left-0 h-7 w-[3px] -translate-y-1/2 rounded-r",
                     active ? "bg-[var(--ns-accent)]" : "bg-transparent",
                   )}
                 />
@@ -120,7 +119,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               "px-3 backdrop-blur md:px-4",
             )}
           >
-            <Link href="/" className="flex items-center gap-2 md:hidden" aria-label="NaviSight home">
+            <Link
+              href="/"
+              className="flex items-center gap-2 md:hidden"
+              aria-label="NaviSight home"
+            >
               <Ship className="size-5 text-[var(--ns-accent)]" aria-hidden="true" />
             </Link>
 

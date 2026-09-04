@@ -66,7 +66,9 @@ export function TimeSeriesChart({
     [max, bottom],
   );
 
-  const path = points.map((point, index) => `${index === 0 ? "M" : "L"}${xAt(index)},${yAt(point.value)}`).join(" ");
+  const path = points
+    .map((point, index) => `${index === 0 ? "M" : "L"}${xAt(index)},${yAt(point.value)}`)
+    .join(" ");
   const areaPath =
     points.length > 0
       ? `${path} L${xAt(points.length - 1)},${bottom} L${xAt(0)},${bottom} Z`
@@ -114,9 +116,7 @@ export function TimeSeriesChart({
       role="img"
       aria-label={
         `${valueLabel} over ${points.length} intervals. ` +
-        (peak
-          ? `Peak ${formatValue(peak.value)} at ${formatX(peak.at)}. `
-          : "") +
+        (peak ? `Peak ${formatValue(peak.value)} at ${formatX(peak.at)}. ` : "") +
         "Use the table view for every value, or arrow keys to step through the series."
       }
     >
@@ -137,7 +137,7 @@ export function TimeSeriesChart({
               x={PADDING.left - 8}
               y={yAt(tick) + 3.5}
               textAnchor="end"
-              className="fill-[var(--ns-text-muted)] text-[10px] tabular"
+              className="tabular fill-[var(--ns-text-muted)] text-[10px]"
             >
               {formatCount(tick)}
             </text>
@@ -162,7 +162,7 @@ export function TimeSeriesChart({
                 x={xAt(index)}
                 y={height - 8}
                 textAnchor="middle"
-                className="fill-[var(--ns-text-muted)] text-[10px] tabular"
+                className="tabular fill-[var(--ns-text-muted)] text-[10px]"
               >
                 {formatX(point.at)}
               </text>

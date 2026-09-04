@@ -13,7 +13,14 @@
 import { Table2, TrendingUp } from "lucide-react";
 import * as React from "react";
 
-import { Button, Card, CardBody, CardHeader, CardTitle, Skeleton } from "@/components/ui/primitives";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  Skeleton,
+} from "@/components/ui/primitives";
 import { EmptyState, ErrorState } from "@/components/ui/states";
 import { cn } from "@/lib/utils";
 
@@ -68,9 +75,7 @@ export function ChartCard({
             ) : (
               <TrendingUp aria-hidden="true" />
             )}
-            <span className="hidden sm:inline">
-              {view === "chart" ? "Table" : "Chart"}
-            </span>
+            <span className="hidden sm:inline">{view === "chart" ? "Table" : "Chart"}</span>
           </Button>
         ) : null}
       </CardHeader>

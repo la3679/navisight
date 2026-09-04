@@ -158,8 +158,24 @@ export function formatCompact(value: Maybe<number>): string {
 /** Turn a bearing into a cardinal point, for a screen-reader-friendly summary. */
 export function bearingToCardinal(degrees: Maybe<number>): string {
   return orDash(degrees, (value) => {
-    const points = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-                    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"] as const;
+    const points = [
+      "N",
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW",
+    ] as const;
     // The modulo guarantees an in-range index; the assertion tells the
     // compiler that, rather than widening the return type to include undefined.
     return points[Math.round((((value % 360) + 360) % 360) / 22.5) % 16]!;

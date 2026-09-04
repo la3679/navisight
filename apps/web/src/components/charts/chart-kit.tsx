@@ -55,7 +55,13 @@ export function useChartWidth<T extends HTMLElement>(): [React.RefObject<T | nul
 export type Padding = { top: number; right: number; bottom: number; left: number };
 
 /** Map a value in `[min, max]` onto `[from, to]`. */
-export function scale(value: number, min: number, max: number, from: number, to: number): number {
+export function scale(
+  value: number,
+  min: number,
+  max: number,
+  from: number,
+  to: number,
+): number {
   if (max === min) return from;
   return from + ((value - min) / (max - min)) * (to - from);
 }
@@ -142,9 +148,7 @@ export function Tooltip({
   const flip = x > containerWidth * 0.62;
   return (
     <div
-      className="pointer-events-none absolute z-10 min-w-[132px] rounded-md border
-                 border-[var(--ns-border-strong)] bg-[var(--ns-surface-overlay)]
-                 px-2.5 py-1.5 text-xs shadow-lg"
+      className="pointer-events-none absolute z-10 min-w-[132px] rounded-md border border-[var(--ns-border-strong)] bg-[var(--ns-surface-overlay)] px-2.5 py-1.5 text-xs shadow-lg"
       style={{
         left: flip ? undefined : x + 14,
         right: flip ? containerWidth - x + 14 : undefined,
@@ -165,7 +169,7 @@ export function Tooltip({
                 style={{ backgroundColor: row.color }}
               />
             ) : null}
-            <span className="font-[family-name:var(--font-mono)] font-semibold tabular text-[var(--ns-text)]">
+            <span className="tabular font-[family-name:var(--font-mono)] font-semibold text-[var(--ns-text)]">
               {row.value}
             </span>
             <span className="ml-auto truncate text-[var(--ns-text-muted)]">{row.label}</span>
@@ -232,7 +236,7 @@ export function ChartTable<T>({
                   className={cn(
                     "px-2.5 py-1.5",
                     column.numeric
-                      ? "text-right font-[family-name:var(--font-mono)] tabular"
+                      ? "tabular text-right font-[family-name:var(--font-mono)]"
                       : "text-left",
                   )}
                 >

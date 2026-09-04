@@ -38,18 +38,54 @@ export type HullProfile = {
  * are conventions, not measurements.
  */
 const PROFILES: Record<string, HullProfile> = {
-  Cargo: { superstructureAt: -0.62, superstructureHeight: 1.15, deckBlocks: 4, bowSharpness: 0.72 },
-  Tanker: { superstructureAt: -0.68, superstructureHeight: 1.0, deckBlocks: 0, bowSharpness: 0.6 },
-  Passenger: { superstructureAt: 0.05, superstructureHeight: 1.6, deckBlocks: 0, bowSharpness: 0.8 },
+  Cargo: {
+    superstructureAt: -0.62,
+    superstructureHeight: 1.15,
+    deckBlocks: 4,
+    bowSharpness: 0.72,
+  },
+  Tanker: {
+    superstructureAt: -0.68,
+    superstructureHeight: 1.0,
+    deckBlocks: 0,
+    bowSharpness: 0.6,
+  },
+  Passenger: {
+    superstructureAt: 0.05,
+    superstructureHeight: 1.6,
+    deckBlocks: 0,
+    bowSharpness: 0.8,
+  },
   Tug: { superstructureAt: 0.18, superstructureHeight: 1.5, deckBlocks: 0, bowSharpness: 0.55 },
-  Towing: { superstructureAt: 0.15, superstructureHeight: 1.3, deckBlocks: 0, bowSharpness: 0.5 },
-  Fishing: { superstructureAt: 0.1, superstructureHeight: 1.2, deckBlocks: 0, bowSharpness: 0.65 },
-  Sailing: { superstructureAt: 0, superstructureHeight: 0.45, deckBlocks: 0, bowSharpness: 0.9 },
+  Towing: {
+    superstructureAt: 0.15,
+    superstructureHeight: 1.3,
+    deckBlocks: 0,
+    bowSharpness: 0.5,
+  },
+  Fishing: {
+    superstructureAt: 0.1,
+    superstructureHeight: 1.2,
+    deckBlocks: 0,
+    bowSharpness: 0.65,
+  },
+  Sailing: {
+    superstructureAt: 0,
+    superstructureHeight: 0.45,
+    deckBlocks: 0,
+    bowSharpness: 0.9,
+  },
   "Pleasure craft": {
-    superstructureAt: 0.05, superstructureHeight: 0.8, deckBlocks: 0, bowSharpness: 0.85,
+    superstructureAt: 0.05,
+    superstructureHeight: 0.8,
+    deckBlocks: 0,
+    bowSharpness: 0.85,
   },
   "High-speed craft": {
-    superstructureAt: 0, superstructureHeight: 0.9, deckBlocks: 0, bowSharpness: 0.95,
+    superstructureAt: 0,
+    superstructureHeight: 0.9,
+    deckBlocks: 0,
+    bowSharpness: 0.95,
   },
 };
 

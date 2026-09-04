@@ -113,7 +113,7 @@ export function ReplayControls({
 
       <div className="flex min-w-[200px] flex-1 items-center gap-3">
         <Slider.Root
-          className="relative flex h-5 flex-1 touch-none select-none items-center"
+          className="relative flex h-5 flex-1 touch-none items-center select-none"
           value={[currentMinute]}
           min={0}
           max={totalMinutes}
@@ -132,17 +132,14 @@ export function ReplayControls({
               the element that needs a name. axe reports the root form as
               `aria-input-field-name`, which is how this was found. */}
           <Slider.Thumb
-            className="block size-4 rounded-full border-2 border-[var(--ns-bg)] bg-[var(--ns-accent)]
-                       shadow focus-visible:outline-2 focus-visible:outline-offset-2
-                       focus-visible:outline-[var(--ns-focus)]"
+            className="block size-4 rounded-full border-2 border-[var(--ns-bg)] bg-[var(--ns-accent)] shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ns-focus)]"
             aria-label="Replay position within the archived day"
             aria-valuetext={formatTimestamp(displayed)}
           />
         </Slider.Root>
 
         <span
-          className="min-w-[168px] shrink-0 font-[family-name:var(--font-mono)] text-[11px] tabular
-                     text-[var(--ns-text-secondary)]"
+          className="tabular min-w-[168px] shrink-0 font-[family-name:var(--font-mono)] text-[11px] text-[var(--ns-text-secondary)]"
           aria-live="off"
         >
           {formatTimestamp(displayed)}

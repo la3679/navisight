@@ -19,7 +19,12 @@ import { api } from "@/lib/api/client";
 import type { MapVessel } from "@/lib/api/types";
 import { mapFamilyColor, OTHER_COLOR, resolveColor, SEQUENTIAL_RAMP } from "@/lib/viz/palette";
 import { configureMapWorker, MAP_LOAD_TIMEOUT_MS } from "./map-worker";
-import { DEFAULT_VIEW, FALLBACK_ATTRIBUTION, CUSTOM_STYLE_URL, resolveMapStyle } from "./map-style";
+import {
+  DEFAULT_VIEW,
+  FALLBACK_ATTRIBUTION,
+  CUSTOM_STYLE_URL,
+  resolveMapStyle,
+} from "./map-style";
 
 // MapLibre resolves its worker URL when the first map is constructed, so this
 // has to run at module scope — before React renders <Map />.
@@ -54,9 +59,7 @@ type Bounds = { west: number; south: number; east: number; north: number };
 
 /** deck.gl layers, mounted as a MapLibre control so both share one canvas. */
 function DeckOverlay({ layers }: { layers: Layer[] }) {
-  const overlay = useControl<MapboxOverlay>(
-    () => new MapboxOverlay({ interleaved: false }),
-  );
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay({ interleaved: false }));
   // Pushing layers is a side effect on an object React does not own, so it
   // belongs in an effect rather than in the render body.
   React.useEffect(() => {
@@ -99,7 +102,12 @@ export function OperationsMap({
   replayAt: string | null;
   selectedMmsi: string | null;
   onSelect: (vessel: MapVessel | null) => void;
-  onStatus: (status: { total: number; shown: number; mode: string; truncated: boolean }) => void;
+  onStatus: (status: {
+    total: number;
+    shown: number;
+    mode: string;
+    truncated: boolean;
+  }) => void;
   focus: { longitude: number; latitude: number } | null;
 }) {
   const mapRef = React.useRef<MapRef | null>(null);
@@ -306,9 +314,7 @@ export function OperationsMap({
           it never covers the mark being inspected. */}
       {hovered ? (
         <div
-          className="pointer-events-none absolute left-3 top-3 max-w-[240px] rounded-md border
-                     border-[var(--ns-border-strong)] bg-[color-mix(in_oklab,var(--ns-surface-overlay)_94%,transparent)]
-                     px-2.5 py-2 text-xs shadow-lg backdrop-blur"
+          className="pointer-events-none absolute top-3 left-3 max-w-[240px] rounded-md border border-[var(--ns-border-strong)] bg-[color-mix(in_oklab,var(--ns-surface-overlay)_94%,transparent)] px-2.5 py-2 text-xs shadow-lg backdrop-blur"
           role="status"
         >
           <p className="truncate font-medium text-[var(--ns-text)]">
@@ -322,7 +328,7 @@ export function OperationsMap({
             />
             {hovered.family === "Unknown" ? "Type not reported" : hovered.family}
           </p>
-          <p className="mt-0.5 font-[family-name:var(--font-mono)] text-[11px] tabular text-[var(--ns-text-muted)]">
+          <p className="tabular mt-0.5 font-[family-name:var(--font-mono)] text-[11px] text-[var(--ns-text-muted)]">
             {hovered.speedOverGroundKnots !== null
               ? `${hovered.speedOverGroundKnots.toFixed(1)} kn`
               : "speed not reported"}
@@ -332,9 +338,7 @@ export function OperationsMap({
 
       {isFetching ? (
         <div
-          className="pointer-events-none absolute right-3 top-3 rounded-full
-                     bg-[color-mix(in_oklab,var(--ns-surface-overlay)_92%,transparent)]
-                     px-2.5 py-1 text-[11px] text-[var(--ns-text-secondary)] backdrop-blur"
+          className="pointer-events-none absolute top-3 right-3 rounded-full bg-[color-mix(in_oklab,var(--ns-surface-overlay)_92%,transparent)] px-2.5 py-1 text-[11px] text-[var(--ns-text-secondary)] backdrop-blur"
           role="status"
           aria-live="polite"
         >
@@ -344,9 +348,7 @@ export function OperationsMap({
 
       {groundFailed ? (
         <div
-          className="absolute left-1/2 top-4 z-10 max-w-[min(30rem,90%)] -translate-x-1/2 rounded-md
-                     border border-[color-mix(in_oklab,var(--ns-warning)_45%,transparent)]
-                     bg-[var(--ns-surface-overlay)] px-3 py-2 text-xs text-[var(--ns-text-secondary)]"
+          className="absolute top-4 left-1/2 z-10 max-w-[min(30rem,90%)] -translate-x-1/2 rounded-md border border-[color-mix(in_oklab,var(--ns-warning)_45%,transparent)] bg-[var(--ns-surface-overlay)] px-3 py-2 text-xs text-[var(--ns-text-secondary)]"
           role="status"
         >
           <span className="font-medium text-[var(--ns-warning)]">
@@ -358,9 +360,7 @@ export function OperationsMap({
 
       {isError ? (
         <div
-          className="absolute left-1/2 top-4 -translate-x-1/2 rounded-md border
-                     border-[color-mix(in_oklab,var(--ns-critical)_45%,transparent)]
-                     bg-[var(--ns-surface-overlay)] px-3 py-2 text-xs text-[var(--ns-critical)]"
+          className="absolute top-4 left-1/2 -translate-x-1/2 rounded-md border border-[color-mix(in_oklab,var(--ns-critical)_45%,transparent)] bg-[var(--ns-surface-overlay)] px-3 py-2 text-xs text-[var(--ns-critical)]"
           role="alert"
         >
           Could not load vessels for this view.
@@ -368,11 +368,7 @@ export function OperationsMap({
       ) : null}
 
       {/* Legend. Identity is never colour-alone: each swatch is labelled. */}
-      <div
-        className="absolute bottom-3 left-3 rounded-md border border-[var(--ns-border)]
-                   bg-[color-mix(in_oklab,var(--ns-surface)_90%,transparent)] px-2.5 py-2
-                   text-[11px] backdrop-blur"
-      >
+      <div className="absolute bottom-3 left-3 rounded-md border border-[var(--ns-border)] bg-[color-mix(in_oklab,var(--ns-surface)_90%,transparent)] px-2.5 py-2 text-[11px] backdrop-blur">
         <p className="mb-1 font-medium text-[var(--ns-text-secondary)]">Vessel type</p>
         <ul className="space-y-0.5">
           {[
@@ -381,7 +377,10 @@ export function OperationsMap({
             { label: "Passenger", color: mapFamilyColor("Passenger") },
             { label: "Other / not reported", color: OTHER_COLOR },
           ].map((entry) => (
-            <li key={entry.label} className="flex items-center gap-1.5 text-[var(--ns-text-muted)]">
+            <li
+              key={entry.label}
+              className="flex items-center gap-1.5 text-[var(--ns-text-muted)]"
+            >
               <span
                 aria-hidden="true"
                 className="size-2 shrink-0 rounded-full"

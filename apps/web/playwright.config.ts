@@ -45,9 +45,7 @@ export default defineConfig({
   workers: process.env.CI ? 2 : undefined,
   forbidOnly: !!process.env.CI,
 
-  reporter: process.env.CI
-    ? [["html", { open: "never" }], ["github"]]
-    : [["list"]],
+  reporter: process.env.CI ? [["html", { open: "never" }], ["github"]] : [["list"]],
 
   use: {
     baseURL: WEB_URL,
@@ -72,9 +70,7 @@ export default defineConfig({
 
   webServer: [
     {
-      command:
-        "uv run uvicorn app.main:app --host 127.0.0.1 --port " +
-        String(API_PORT),
+      command: "uv run uvicorn app.main:app --host 127.0.0.1 --port " + String(API_PORT),
       cwd: "../api",
       url: `${API_URL}/api/v1/health`,
       reuseExistingServer: !process.env.CI,

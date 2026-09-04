@@ -226,7 +226,11 @@ export function NotConfiguredState({
 /** Shown when the database is reachable but nothing has been imported. */
 export function NoDataState({ className }: { className?: string }) {
   return (
-    <Shell icon={<DatabaseZap />} title="No AIS data has been imported yet" className={className}>
+    <Shell
+      icon={<DatabaseZap />}
+      title="No AIS data has been imported yet"
+      className={className}
+    >
       <p>Run the import to populate the database:</p>
       <pre className="mt-2 overflow-x-auto rounded bg-[var(--ns-surface-raised)] p-2 text-left font-[family-name:var(--font-mono)] text-[11px]">
         {`cd apps/api

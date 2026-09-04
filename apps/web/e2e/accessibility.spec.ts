@@ -122,7 +122,9 @@ test("claim labels are words, not colours", async ({ page }) => {
   expect(await labels.count()).toBeGreaterThan(0);
 });
 
-test("the map legend names each vessel type rather than only colouring it", async ({ page }) => {
+test("the map legend names each vessel type rather than only colouring it", async ({
+  page,
+}) => {
   await page.goto("/operations");
 
   for (const label of ["Cargo", "Tanker", "Passenger"]) {

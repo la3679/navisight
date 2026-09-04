@@ -115,7 +115,10 @@ export function mapLegend(): { label: string; color: string }[] {
  */
 export function resolveColor(cssVar: string): [number, number, number] {
   if (typeof window === "undefined") return [120, 140, 160];
-  const name = cssVar.replace(/^var\(/, "").replace(/\)$/, "").trim();
+  const name = cssVar
+    .replace(/^var\(/, "")
+    .replace(/\)$/, "")
+    .trim();
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   return hexToRgb(value) ?? [120, 140, 160];
 }
@@ -125,9 +128,5 @@ function hexToRgb(hex: string): [number, number, number] | null {
   if (!match) return null;
   // The regex has exactly three capturing groups, so a successful match always
   // provides all three.
-  return [
-    parseInt(match[1]!, 16),
-    parseInt(match[2]!, 16),
-    parseInt(match[3]!, 16),
-  ];
+  return [parseInt(match[1]!, 16), parseInt(match[2]!, 16), parseInt(match[3]!, 16)];
 }

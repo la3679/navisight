@@ -19,11 +19,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function VesselPage({
-  params,
-}: {
-  params: Promise<{ mmsi: string }>;
-}) {
+export default async function VesselPage({ params }: { params: Promise<{ mmsi: string }> }) {
   const { mmsi } = await params;
   return <VesselDetailView mmsi={mmsi} />;
 }

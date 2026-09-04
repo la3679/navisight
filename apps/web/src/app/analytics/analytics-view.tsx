@@ -51,10 +51,7 @@ function withTail(categories: Category[], keep: number): { rows: Category[]; fol
   const tail = categories.slice(keep);
   const count = tail.reduce((sum, category) => sum + category.count, 0);
   return {
-    rows: [
-      ...head,
-      { key: "__tail", label: `Remaining ${tail.length} categories`, count },
-    ],
+    rows: [...head, { key: "__tail", label: `Remaining ${tail.length} categories`, count }],
     folded: tail.length,
   };
 }
@@ -143,7 +140,7 @@ export function AnalyticsView() {
           date picker with one legal answer. */}
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-[var(--ns-border)] bg-[var(--ns-surface)] px-3 py-2">
         <div className="flex items-center gap-2 text-xs">
-          <span className="text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <span className="text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Window
           </span>
           <Badge tone="info">
@@ -156,7 +153,7 @@ export function AnalyticsView() {
 
         <fieldset className="ml-auto flex items-center gap-1.5">
           <legend className="sr-only">Time bucket</legend>
-          <span className="mr-1 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+          <span className="mr-1 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
             Bucket
           </span>
           {(
@@ -204,9 +201,9 @@ export function AnalyticsView() {
             </p>
           </div>
           <p className="max-w-sm text-[11px] leading-relaxed text-[var(--ns-text-muted)]">
-            A vessel contributes one report per broadcast, so a moored ship reporting all
-            day counts many times here and once as a vessel. The two figures answer
-            different questions.
+            A vessel contributes one report per broadcast, so a moored ship reporting all day
+            counts many times here and once as a vessel. The two figures answer different
+            questions.
           </p>
         </CardBody>
       </Card>
@@ -440,12 +437,9 @@ export function AnalyticsView() {
               <li key={entry.vessel.mmsi}>
                 <Link
                   href={`/vessels/${entry.vessel.mmsi}`}
-                  className="flex items-center gap-3 rounded-md px-2 py-1.5 text-xs
-                             hover:bg-[var(--ns-surface-raised)]
-                             focus-visible:outline focus-visible:outline-2
-                             focus-visible:outline-[var(--ns-accent)]"
+                  className="flex items-center gap-3 rounded-md px-2 py-1.5 text-xs hover:bg-[var(--ns-surface-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ns-accent)]"
                 >
-                  <span className="w-5 shrink-0 text-right font-[family-name:var(--font-mono)] tabular text-[var(--ns-text-muted)]">
+                  <span className="tabular w-5 shrink-0 text-right font-[family-name:var(--font-mono)] text-[var(--ns-text-muted)]">
                     {index + 1}
                   </span>
                   <span className="min-w-0 flex-1 truncate font-medium text-[var(--ns-text)]">
@@ -454,7 +448,7 @@ export function AnalyticsView() {
                   <span className="hidden shrink-0 text-[var(--ns-text-muted)] sm:inline">
                     {entry.vessel.vesselType.label}
                   </span>
-                  <span className="w-20 shrink-0 text-right font-[family-name:var(--font-mono)] tabular text-[var(--ns-text)]">
+                  <span className="tabular w-20 shrink-0 text-right font-[family-name:var(--font-mono)] text-[var(--ns-text)]">
                     {formatCount(entry.observations)}
                   </span>
                 </Link>

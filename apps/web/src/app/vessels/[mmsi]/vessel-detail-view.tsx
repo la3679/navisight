@@ -147,9 +147,7 @@ export function VesselDetailView({ mmsi }: { mmsi: string }) {
             <VesselName vessel={data} />
           </h1>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <span
-              className="inline-flex items-center gap-1.5 text-sm text-[var(--ns-text-secondary)]"
-            >
+            <span className="inline-flex items-center gap-1.5 text-sm text-[var(--ns-text-secondary)]">
               <span
                 aria-hidden="true"
                 className="size-2.5 rounded-full"
@@ -169,10 +167,7 @@ export function VesselDetailView({ mmsi }: { mmsi: string }) {
               `&lon=${latest.data.coordinates.longitude}` +
               `&lat=${latest.data.coordinates.latitude}`
             }
-            className="inline-flex h-9 items-center gap-1.5 rounded-md border
-                       border-[var(--ns-border)] bg-[var(--ns-surface-raised)] px-3.5
-                       text-sm font-medium transition-colors
-                       hover:border-[var(--ns-border-strong)] hover:bg-[var(--ns-surface-overlay)]"
+            className="inline-flex h-9 items-center gap-1.5 rounded-md border border-[var(--ns-border)] bg-[var(--ns-surface-raised)] px-3.5 text-sm font-medium transition-colors hover:border-[var(--ns-border-strong)] hover:bg-[var(--ns-surface-overlay)]"
           >
             <MapPin className="size-4" aria-hidden="true" />
             Show on map
@@ -272,19 +267,19 @@ export function VesselDetailView({ mmsi }: { mmsi: string }) {
                           key={`${item.timestamp}-${item.coordinates.longitude}`}
                           className="border-b border-[var(--ns-border)] last:border-0"
                         >
-                          <td className="py-1.5 pr-3 tabular">
+                          <td className="tabular py-1.5 pr-3">
                             {formatTimestamp(item.timestamp)}
                           </td>
-                          <td className="py-1.5 pr-3 tabular text-[var(--ns-text-secondary)]">
+                          <td className="tabular py-1.5 pr-3 text-[var(--ns-text-secondary)]">
                             {formatCoordinates(
                               item.coordinates.longitude,
                               item.coordinates.latitude,
                             )}
                           </td>
-                          <td className="py-1.5 pr-3 text-right tabular">
+                          <td className="tabular py-1.5 pr-3 text-right">
                             {formatSpeed(item.navigation.speedOverGroundKnots)}
                           </td>
-                          <td className="py-1.5 pr-3 text-right tabular">
+                          <td className="tabular py-1.5 pr-3 text-right">
                             {formatBearing(item.navigation.courseOverGroundDegrees)}
                           </td>
                           <td className="py-1.5 font-[family-name:var(--font-sans)] text-[var(--ns-text-secondary)]">
@@ -351,8 +346,8 @@ export function VesselDetailView({ mmsi }: { mmsi: string }) {
             <CardHeader>
               <CardTitle>Representative visualisation</CardTitle>
               <CardDescription>
-                A generic hull shaped by this vessel&rsquo;s reported dimensions and oriented
-                to its last known heading. It is not a model of the actual ship.
+                A generic hull shaped by this vessel&rsquo;s reported dimensions and oriented to
+                its last known heading. It is not a model of the actual ship.
               </CardDescription>
             </CardHeader>
             <CardBody>

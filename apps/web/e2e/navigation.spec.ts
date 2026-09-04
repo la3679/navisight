@@ -60,7 +60,9 @@ for (const route of ROUTES) {
     const errors = collectErrors(page);
 
     const response = await page.goto(route.path);
-    expect(response?.status(), `${route.path} returned ${response?.status()}`).toBeLessThan(400);
+    expect(response?.status(), `${route.path} returned ${response?.status()}`).toBeLessThan(
+      400,
+    );
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText(route.heading);
     // Next renders its 404 as a page, not an HTTP status, so the status check
@@ -76,13 +78,18 @@ test("the navigation rail reaches every route without a dead link", async ({ pag
 
   for (const route of ROUTES) {
     const link = page.getByRole("navigation", { name: /primary/i }).getByRole("link", {
-      name: new RegExp(route.path === "/" ? "NaviSight home|Overview" : route.path.slice(1), "i"),
+      name: new RegExp(
+        route.path === "/" ? "NaviSight home|Overview" : route.path.slice(1),
+        "i",
+      ),
     });
     await expect(link.first()).toBeVisible();
   }
 });
 
-test("the dataset badge states that the data is historical, on every page", async ({ page }) => {
+test("the dataset badge states that the data is historical, on every page", async ({
+  page,
+}) => {
   // ADR-0008: the interface must say the data is a recording where the user is
   // actually looking, not in a tooltip. That is a product claim, so it is
   // asserted rather than trusted to survive a refactor.

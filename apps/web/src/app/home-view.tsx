@@ -82,15 +82,7 @@ const DESTINATIONS: Destination[] = [
 ];
 
 /** A headline figure. The label carries the unit; the number never stands alone. */
-function Statistic({
-  value,
-  label,
-  hint,
-}: {
-  value: string;
-  label: string;
-  hint: string;
-}) {
+function Statistic({ value, label, hint }: { value: string; label: string; hint: string }) {
   // Inside a <dl>, so this has to be a dt/dd pair — a <dl> of <p> elements is
   // a definition list containing no definitions, which is what a screen reader
   // is told it is getting. The label reads as the term and the figure as its
@@ -101,7 +93,7 @@ function Statistic({
       <dt className="order-2 mt-0.5 text-xs font-medium text-[var(--ns-text-secondary)]">
         {label}
       </dt>
-      <dd className="order-1 font-[family-name:var(--font-mono)] text-2xl font-semibold tabular text-[var(--ns-text)] md:text-3xl">
+      <dd className="tabular order-1 font-[family-name:var(--font-mono)] text-2xl font-semibold text-[var(--ns-text)] md:text-3xl">
         {value}
       </dd>
       <dd className="order-3 mt-0.5 text-[11px] leading-snug text-[var(--ns-text-muted)]">
@@ -130,23 +122,21 @@ export function HomeView() {
                decorative, so its absence costs nothing and is stated. */
             <div className="flex size-full items-center justify-center bg-[var(--ns-bg)] px-6 text-center">
               <p className="max-w-sm text-xs text-[var(--ns-text-muted)]">
-                The decorative harbour scene needs WebGL, which this browser does not
-                provide. Nothing else on NaviSight depends on it.
+                The decorative harbour scene needs WebGL, which this browser does not provide.
+                Nothing else on NaviSight depends on it.
               </p>
             </div>
           )}
 
           {/* The scene is scenery. Saying so beside it is the difference between
               atmosphere and a false claim about the data (SOUL.md §3). */}
-          <p
-            className="pointer-events-none absolute bottom-2 right-3 text-[10px] text-[var(--ns-text-muted)]"
-          >
+          <p className="pointer-events-none absolute right-3 bottom-2 text-[10px] text-[var(--ns-text-muted)]">
             Illustrative scene, generated in code. Not dataset positions.
           </p>
 
           {/* The scrim only covers the band the text sits in. A full-height
               wash would flatten the scene it exists to make readable. */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 top-1/3 flex flex-col justify-end bg-gradient-to-t from-[var(--ns-surface)] via-[color-mix(in_oklab,var(--ns-surface)_86%,transparent)] to-transparent p-4 md:p-6">
+          <div className="pointer-events-none absolute inset-x-0 top-1/3 bottom-0 flex flex-col justify-end bg-gradient-to-t from-[var(--ns-surface)] via-[color-mix(in_oklab,var(--ns-surface)_86%,transparent)] to-transparent p-4 md:p-6">
             <div className="pointer-events-auto max-w-2xl">
               <Badge tone="info">
                 <History className="size-3" aria-hidden="true" />
@@ -156,19 +146,20 @@ export function HomeView() {
                 What vessels did, where, and when.
               </h1>
               <p className="mt-1.5 text-sm leading-relaxed text-[var(--ns-text-secondary)]">
-                NaviSight reconstructs a day of maritime movement from recorded AIS
-                broadcasts. {" "}
+                NaviSight reconstructs a day of maritime movement from recorded AIS broadcasts.{" "}
                 {coverageStart ? (
                   <>
                     This deployment holds{" "}
-                    <strong className="text-[var(--ns-text)]">{formatDate(coverageStart)}</strong>,
-                    from {formatTimeOfDay(coverageStart)} to {formatTimeOfDay(coverageEnd)}.
+                    <strong className="text-[var(--ns-text)]">
+                      {formatDate(coverageStart)}
+                    </strong>
+                    , from {formatTimeOfDay(coverageStart)} to {formatTimeOfDay(coverageEnd)}.
                   </>
                 ) : (
                   <>Nothing has been imported into this deployment yet.</>
                 )}{" "}
-                It is an archive, not a live feed — no position here reflects where a ship
-                is now.
+                It is an archive, not a live feed — no position here reflects where a ship is
+                now.
               </p>
             </div>
           </div>
@@ -177,7 +168,11 @@ export function HomeView() {
         {/* ----------------------------------------------------- Figures */}
         <div className="border-t border-[var(--ns-border)] p-4 md:p-6">
           {status.isPending ? (
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-4" aria-label="Loading" role="status">
+            <div
+              className="grid grid-cols-2 gap-6 md:grid-cols-4"
+              aria-label="Loading"
+              role="status"
+            >
               {Array.from({ length: 4 }, (_, index) => (
                 <div key={index} className="space-y-2">
                   <Skeleton className="h-8 w-24" />
@@ -240,8 +235,7 @@ export function HomeView() {
                   <Icon className="size-4 text-[var(--ns-accent)]" aria-hidden="true" />
                   <span className="text-sm font-medium">{destination.title}</span>
                   <ArrowRight
-                    className="ml-auto size-4 text-[var(--ns-text-muted)] transition-transform
-                               group-hover:translate-x-0.5"
+                    className="ml-auto size-4 text-[var(--ns-text-muted)] transition-transform group-hover:translate-x-0.5"
                     aria-hidden="true"
                   />
                 </div>
@@ -263,27 +257,43 @@ export function HomeView() {
           <CardBody className="pt-4 text-sm leading-relaxed text-[var(--ns-text-secondary)]">
             <ul className="space-y-2">
               <li className="flex gap-2">
-                <Ship className="mt-0.5 size-4 shrink-0 text-[var(--ns-text-muted)]" aria-hidden="true" />
+                <Ship
+                  className="mt-0.5 size-4 shrink-0 text-[var(--ns-text-muted)]"
+                  aria-hidden="true"
+                />
                 <span>
                   <strong className="text-[var(--ns-text)]">Where a ship is now.</strong> The
                   archive ends at its last recorded broadcast and never advances.
                 </span>
               </li>
               <li className="flex gap-2">
-                <History className="mt-0.5 size-4 shrink-0 text-[var(--ns-text-muted)]" aria-hidden="true" />
+                <History
+                  className="mt-0.5 size-4 shrink-0 text-[var(--ns-text-muted)]"
+                  aria-hidden="true"
+                />
                 <span>
-                  <strong className="text-[var(--ns-text)]">What happened between
-                  broadcasts.</strong> The source is filtered to one-minute resolution and
-                  NaviSight never interpolates, so a track is a sequence of samples.
+                  <strong className="text-[var(--ns-text)]">
+                    What happened between broadcasts.
+                  </strong>{" "}
+                  The source is filtered to one-minute resolution and NaviSight never
+                  interpolates, so a track is a sequence of samples.
                 </span>
               </li>
               <li className="flex gap-2">
-                <Database className="mt-0.5 size-4 shrink-0 text-[var(--ns-text-muted)]" aria-hidden="true" />
+                <Database
+                  className="mt-0.5 size-4 shrink-0 text-[var(--ns-text-muted)]"
+                  aria-hidden="true"
+                />
                 <span>
-                  <strong className="text-[var(--ns-text)]">Anything a vessel did not
-                  broadcast.</strong> AIS fields are self-reported and often blank. A missing
-                  heading is shown as missing, never as zero — see the{" "}
-                  <Link href="/data" className="text-[var(--ns-accent)] underline underline-offset-2">
+                  <strong className="text-[var(--ns-text)]">
+                    Anything a vessel did not broadcast.
+                  </strong>{" "}
+                  AIS fields are self-reported and often blank. A missing heading is shown as
+                  missing, never as zero — see the{" "}
+                  <Link
+                    href="/data"
+                    className="text-[var(--ns-accent)] underline underline-offset-2"
+                  >
                     measured field completeness
                   </Link>
                   .

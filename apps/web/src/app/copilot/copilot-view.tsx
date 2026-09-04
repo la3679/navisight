@@ -76,9 +76,9 @@ function NotConfigured({ status }: { status: AgentStatus | undefined }) {
     <div className="space-y-5">
       <NotConfiguredState title="No model provider is configured">
         <p>
-          The copilot is optional. Every other part of NaviSight — the map, the vessel
-          history, the analytics, the dataset report — works without it, and nothing here is
-          degraded by leaving it off.
+          The copilot is optional. Every other part of NaviSight — the map, the vessel history,
+          the analytics, the dataset report — works without it, and nothing here is degraded by
+          leaving it off.
         </p>
         <p className="mt-2">
           Set a provider in <code>.env</code> at the repository root and restart the API:
@@ -93,8 +93,8 @@ OPENAI_API_KEY=...
 LLM_PROVIDER=mock`}
         </pre>
         <p className="mt-2">
-          The key is read only by the backend. It is never logged, never returned in a
-          response, and never reaches the browser.
+          The key is read only by the backend. It is never logged, never returned in a response,
+          and never reaches the browser.
         </p>
       </NotConfiguredState>
 
@@ -115,10 +115,10 @@ function ToolCatalogue({ status }: { status: AgentStatus }) {
         </CardTitle>
         <CardDescription>
           The complete list — {status.tools.length} functions, published so you can read the
-          boundary rather than infer it from what gets refused. The model chooses a name
-          from this list and supplies arguments the server validates. It cannot write a
-          database query: no tool accepts a filter, a pipeline, a field path, or a URL, so
-          there is nowhere to put one.
+          boundary rather than infer it from what gets refused. The model chooses a name from
+          this list and supplies arguments the server validates. It cannot write a database
+          query: no tool accepts a filter, a pipeline, a field path, or a URL, so there is
+          nowhere to put one.
         </CardDescription>
       </CardHeader>
       <CardBody>
@@ -154,8 +154,7 @@ function ProviderNotice({ status }: { status: AgentStatus }) {
     return (
       <div
         role="note"
-        className="flex items-start gap-2 rounded-md border border-[color-mix(in_oklab,var(--ns-warning)_35%,transparent)]
-                   bg-[color-mix(in_oklab,var(--ns-warning)_10%,transparent)] px-3 py-2.5"
+        className="flex items-start gap-2 rounded-md border border-[color-mix(in_oklab,var(--ns-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--ns-warning)_10%,transparent)] px-3 py-2.5"
       >
         <FlaskConical
           aria-hidden="true"
@@ -166,9 +165,9 @@ function ProviderNotice({ status }: { status: AgentStatus }) {
             A deterministic stub is answering, not a model.
           </strong>{" "}
           It matches a keyword, calls one tool, and reports the result verbatim. It never
-          paraphrases, never interprets, and never produces a number the tools did not — so
-          it cannot answer a multi-step question. Everything below is still real data from
-          real tool calls.
+          paraphrases, never interprets, and never produces a number the tools did not — so it
+          cannot answer a multi-step question. Everything below is still real data from real
+          tool calls.
         </p>
       </div>
     );
@@ -183,8 +182,8 @@ function ProviderNotice({ status }: { status: AgentStatus }) {
           / <span className="font-[family-name:var(--font-mono)]">{status.model}</span>
         </>
       ) : null}
-      . Language models make confident mistakes; the evidence under each answer is how you
-      check this one.
+      . Language models make confident mistakes; the evidence under each answer is how you check
+      this one.
     </p>
   );
 }
@@ -207,8 +206,7 @@ function AnswerCard({ answer }: { answer: AgentAnswer }) {
         {answer.truncated ? (
           <div
             role="alert"
-            className="flex items-start gap-2 rounded-md border border-[color-mix(in_oklab,var(--ns-warning)_35%,transparent)]
-                       bg-[color-mix(in_oklab,var(--ns-warning)_10%,transparent)] px-3 py-2.5"
+            className="flex items-start gap-2 rounded-md border border-[color-mix(in_oklab,var(--ns-warning)_35%,transparent)] bg-[color-mix(in_oklab,var(--ns-warning)_10%,transparent)] px-3 py-2.5"
           >
             <AlertTriangle
               aria-hidden="true"
@@ -228,7 +226,7 @@ function AnswerCard({ answer }: { answer: AgentAnswer }) {
         <section aria-labelledby={`claims-${answer.runId}`}>
           <h3
             id={`claims-${answer.runId}`}
-            className="mb-2 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]"
+            className="mb-2 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase"
           >
             Claims, and how strongly each is supported
           </h3>
@@ -239,7 +237,7 @@ function AnswerCard({ answer }: { answer: AgentAnswer }) {
           <section aria-labelledby={`limits-${answer.runId}`}>
             <h3
               id={`limits-${answer.runId}`}
-              className="mb-1.5 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]"
+              className="mb-1.5 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase"
             >
               What this answer cannot establish
             </h3>
@@ -252,12 +250,12 @@ function AnswerCard({ answer }: { answer: AgentAnswer }) {
         <section aria-labelledby={`evidence-${answer.runId}`}>
           <h3
             id={`evidence-${answer.runId}`}
-            className="mb-2 flex flex-wrap items-baseline gap-x-2 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]"
+            className="mb-2 flex flex-wrap items-baseline gap-x-2 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase"
           >
             Evidence
-            <span className="normal-case tracking-normal">
-              — {answer.evidence.length} tool{answer.evidence.length === 1 ? "" : "s"} ran.
-              Open any one to see exactly what it was asked and what it returned.
+            <span className="tracking-normal normal-case">
+              — {answer.evidence.length} tool{answer.evidence.length === 1 ? "" : "s"} ran. Open
+              any one to see exactly what it was asked and what it returned.
             </span>
           </h3>
           <EvidenceList evidence={answer.evidence} />
@@ -273,7 +271,9 @@ function AnswerCard({ answer }: { answer: AgentAnswer }) {
             {answer.model ? ` / ${answer.model}` : ""}
           </span>
           {tokens !== null ? <span>{tokens.toLocaleString()} tokens</span> : null}
-          <span className="font-[family-name:var(--font-mono)]">run {answer.runId.slice(0, 12)}</span>
+          <span className="font-[family-name:var(--font-mono)]">
+            run {answer.runId.slice(0, 12)}
+          </span>
         </footer>
       </CardBody>
     </Card>
@@ -336,7 +336,7 @@ function AskForm({
         className={cn(
           "w-full resize-y rounded-md border border-[var(--ns-border)] bg-[var(--ns-surface-raised)]",
           "px-3 py-2.5 text-sm leading-relaxed text-[var(--ns-text)]",
-          "placeholder:text-[var(--ns-text-muted)] transition-colors",
+          "transition-colors placeholder:text-[var(--ns-text-muted)]",
           "hover:border-[var(--ns-border-strong)] disabled:opacity-60",
           "focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ns-accent)]",
           tooLong && "border-[var(--ns-critical)]",
@@ -346,8 +346,8 @@ function AskForm({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p id="copilot-question-hint" className="text-[11px] text-[var(--ns-text-muted)]">
           <CornerDownLeft aria-hidden="true" className="mr-1 inline size-3 align-[-2px]" />
-          Enter to ask, Shift+Enter for a new line. Capped at {status.maxToolCalls} tool
-          calls and {status.timeoutSeconds} s.
+          Enter to ask, Shift+Enter for a new line. Capped at {status.maxToolCalls} tool calls
+          and {status.timeoutSeconds} s.
           {tooLong ? (
             <span className="ml-1 text-[var(--ns-critical)]">
               {question.length} of {QUESTION_MAX_LENGTH} characters — too long to send.
@@ -420,9 +420,8 @@ export function CopilotView() {
         Copilot
       </h1>
       <p className="mt-1 max-w-2xl text-sm text-[var(--ns-text-secondary)]">
-        Ask about the archived AIS day. Every answer shows the tool calls it was built from
-        and labels how strongly each claim is supported, so you can check it rather than
-        trust it.
+        Ask about the archived AIS day. Every answer shows the tool calls it was built from and
+        labels how strongly each claim is supported, so you can check it rather than trust it.
       </p>
     </header>
   );
@@ -478,9 +477,9 @@ export function CopilotView() {
           <CardHeader>
             <CardTitle>Questions the tools can answer</CardTitle>
             <CardDescription>
-              The copilot can only answer what a tool covers. A question outside that — “why
-              did this vessel slow down?”, “where was it heading?” — has no tool, and the
-              honest answer is that it cannot be established from AIS.
+              The copilot can only answer what a tool covers. A question outside that — “why did
+              this vessel slow down?”, “where was it heading?” — has no tool, and the honest
+              answer is that it cannot be established from AIS.
             </CardDescription>
           </CardHeader>
           <CardBody className="space-y-4">
@@ -502,7 +501,7 @@ export function CopilotView() {
             <Separator />
 
             <div>
-              <p className="mb-2 text-[11px] uppercase tracking-wide text-[var(--ns-text-muted)]">
+              <p className="mb-2 text-[11px] tracking-wide text-[var(--ns-text-muted)] uppercase">
                 Every claim carries one of four labels
               </p>
               <ClaimKindLegend />
@@ -530,9 +529,9 @@ export function CopilotView() {
           archive
         </Badge>
         <span>
-          The copilot reads one recorded day and nothing else. It has no live feed, no
-          outside knowledge of these vessels, and no way to say where a ship is now — only
-          where it was observed, and when.
+          The copilot reads one recorded day and nothing else. It has no live feed, no outside
+          knowledge of these vessels, and no way to say where a ship is now — only where it was
+          observed, and when.
         </span>
       </p>
     </div>
