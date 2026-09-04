@@ -132,3 +132,80 @@ uv run pytest tests/integration/test_rollup.py
 
 Dropping the `analytics_rollup` collection is safe: the API returns the same
 numbers from the live pipelines, slowly.
+
+---
+
+# Dataset status: the coverage bounds
+
+A separate finding, made while verifying the copilot endpoint. Unlike the
+analytics work above, this one needed no new mechanism at all.
+
+`/dataset/status` is not an analytics endpoint, but it is the most-called route
+in the product: the dataset badge in the header renders on **every page**, so
+its latency sits behind every screen.
+
+Measured through the API, three consecutive requests:
+
+| | Time |
+|---|---|
+| Before | **4.685 s / 4.623 s / 4.603 s** |
+| After | **0.0117 s / 0.0266 s / 0.0111 s** |
+
+## Cause
+
+The route reported the archive's first and last timestamps with the obvious
+spelling:
+
+```javascript
+db.vessel_positions.aggregate([
+  {$group: {_id: null, min: {$min: "$timestamp"}, max: {$max: "$timestamp"}}}
+])
+```
+
+`$group` has to visit every document to know the extremes, so it scanned all
+5,928,519. The four `estimated_document_count()` calls beside it are metadata
+reads and cost nothing; this one aggregation was the whole 4.6 s.
+
+## Fix
+
+Two sorted single-document reads, one in each direction, riding the existing
+`position_timestamp` index:
+
+```python
+first = await collection.find_one({}, {"timestamp": 1}, sort=[("timestamp", 1)])
+last  = await collection.find_one({}, {"timestamp": 1}, sort=[("timestamp", -1)])
+```
+
+Measured directly against MongoDB, same process, same warm cache:
+
+| Approach | Time | Result |
+|---|---|---|
+| `$group` `$min`/`$max` | **4.634 s** | `2025-01-08T00:00:00Z` … `23:59:59Z` |
+| two `sort().limit(1)` | **0.019 s** | identical |
+
+`explain()` on the ascending read:
+
+```
+nReturned 1, totalKeysExamined 1, totalDocsExamined 1, executionTimeMillis 0
+```
+
+One index key, one document. No new index, no cache, no rollup — the index that
+already existed was simply not being used for this question.
+
+## Reproducing
+
+```bash
+cd apps/api
+uv run python - <<'PY'
+import time
+from pymongo import MongoClient, ASCENDING, DESCENDING
+pos = MongoClient("mongodb://localhost:27017", tz_aware=True)["navisight"]["vessel_positions"]
+t = time.perf_counter()
+list(pos.aggregate([{"$group": {"_id": None, "min": {"$min": "$timestamp"}, "max": {"$max": "$timestamp"}}}]))
+print(f"group:  {time.perf_counter() - t:.3f}s")
+t = time.perf_counter()
+next(iter(pos.find({}, {"timestamp": 1}).sort([("timestamp", ASCENDING)]).limit(1)))
+next(iter(pos.find({}, {"timestamp": 1}).sort([("timestamp", DESCENDING)]).limit(1)))
+print(f"sorted: {time.perf_counter() - t:.3f}s")
+PY
+```

@@ -13,6 +13,10 @@ from typing import Annotated, Any, Literal
 from fastapi import APIRouter, Path, Query
 
 from app import __version__
+from app.agent import factory as agent_factory
+from app.agent import runner as agent_runner
+from app.agent import tools as agent_tools
+from app.agent.provider import ProviderError
 from app.api import schemas
 from app.api.deps import (
     BoundingBoxDep,
@@ -28,7 +32,7 @@ from app.config import get_settings
 from app.db.client import ping
 from app.domain.geo import MAX_RADIUS_KM
 from app.domain.vessel_types import nav_status_codes
-from app.errors import ErrorResponse, VesselNotFoundError
+from app.errors import AiNotConfiguredError, ApiError, ErrorCode, ErrorResponse, VesselNotFoundError
 from app.services import analytics as analytics_service
 from app.services import dataset as dataset_service
 from app.services import geo as geo_service
@@ -390,6 +394,120 @@ async def active_vessels(
 
 
 # ---------------------------------------------------------------------------
+# AI copilot (optional)
+# ---------------------------------------------------------------------------
+AGENT_RESPONSES: dict[int | str, dict[str, Any]] = {
+    503: {
+        "model": ErrorResponse,
+        "description": (
+            "No provider is configured (AI_NOT_CONFIGURED), or the configured "
+            "one could not be reached (AI_ERROR)"
+        ),
+    }
+}
+
+
+@router.get("/agent/status", response_model=schemas.AgentStatus, tags=["agent"])
+async def agent_status() -> schemas.AgentStatus:
+    """Whether the copilot is usable, and exactly what it is allowed to do.
+
+    This route answers with 200 even when nothing is configured — "not
+    configured" is a state to render, not a failure (SOUL.md §11). It is also
+    where the tool catalogue is published: a user should be able to see the
+    complete list of things the copilot can do before asking it anything,
+    rather than inferring the boundary from what it happens to refuse.
+
+    Never contains a credential. See `agent_factory.describe`.
+    """
+    settings = get_settings()
+    described = agent_factory.describe(settings)
+    return schemas.AgentStatus(
+        configured=bool(described["configured"]),
+        provider=str(described["provider"]),
+        model=str(described["model"]),
+        deterministic=bool(described["deterministic"]),
+        max_tool_calls=settings.agent_max_tool_calls,
+        timeout_seconds=settings.agent_timeout_seconds,
+        tools=[
+            schemas.AgentToolDescription(name=tool.name, description=tool.description)
+            for tool in agent_tools.TOOLS
+        ],
+    )
+
+
+@router.post(
+    "/agent/ask",
+    response_model=schemas.AgentAnswer,
+    tags=["agent"],
+    responses=AGENT_RESPONSES,
+)
+async def agent_ask(database: Db, request: schemas.AgentRequest) -> schemas.AgentAnswer:
+    """Answer one question about the archive, and return the evidence for it.
+
+    The handler stays thin on purpose. Every guarantee the feature makes —
+    termination under a budget, allow-listed tools only, no model-authored
+    query, a recorded trace — lives in `app.agent.runner` and
+    `app.agent.tools`, where it is tested without HTTP. This layer decides only
+    two things: that a provider exists, and how a provider failure is reported.
+
+    A provider that is missing or refuses is a 503, not a 500: nothing is
+    broken in NaviSight, an optional dependency is unavailable, and every other
+    route keeps working.
+    """
+    settings = get_settings()
+    if not settings.ai_enabled:
+        raise AiNotConfiguredError
+
+    try:
+        provider = agent_factory.build_provider(settings)
+    except ProviderError as exc:
+        # Reachable when ai_enabled is true but the provider still rejects the
+        # configuration. Reported as not-configured because that is what it is.
+        raise AiNotConfiguredError from exc
+
+    try:
+        result = await agent_runner.run(
+            database,
+            provider,
+            request.question,
+            max_tool_calls=settings.agent_max_tool_calls,
+            timeout_seconds=settings.agent_timeout_seconds,
+        )
+    except ProviderError as exc:
+        raise ApiError(
+            ErrorCode.AI_ERROR,
+            agent_runner.provider_error_message(exc),
+            status_code=503,
+        ) from exc
+
+    return schemas.AgentAnswer(
+        run_id=result.run_id,
+        question=result.question,
+        answer=result.answer,
+        # The runner already coerced every kind into the closed set, so
+        # validation here is a re-check rather than the first one.
+        claims=[schemas.AgentClaim.model_validate(claim) for claim in result.claims],
+        limitations=result.limitations,
+        evidence=[
+            schemas.AgentToolCall(
+                name=call.name,
+                arguments=call.arguments,
+                ok=call.ok,
+                duration_ms=call.duration_ms,
+                result=call.result,
+                error=call.error,
+            )
+            for call in result.evidence
+        ],
+        provider=result.provider,
+        model=result.model,
+        truncated=result.truncated,
+        duration_ms=result.duration_ms,
+        usage=result.usage,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Dataset
 # ---------------------------------------------------------------------------
 @router.get("/dataset/status", response_model=schemas.DatasetStatus, tags=["dataset"])
@@ -432,6 +550,13 @@ def build_openapi_tags() -> list[dict[str, Any]]:
         {"name": "geo", "description": "Proximity search over latest known positions."},
         {"name": "map", "description": "Viewport loading for the operations map."},
         {"name": "analytics", "description": "Aggregations over the imported dataset."},
+        {
+            "name": "agent",
+            "description": (
+                "The evidence-grounded copilot. Optional: absent configuration "
+                "is reported as a state, not an error."
+            ),
+        },
         {"name": "dataset", "description": "What is loaded and how complete it is."},
         {"name": "reference", "description": "Static AIS code lookups."},
     ]

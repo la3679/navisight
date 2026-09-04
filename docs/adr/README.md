@@ -19,8 +19,9 @@ not finished.
 | [0009](0009-treat-source-timestamps-as-utc.md) | Treat source timestamps as UTC and store UTC internally | Accepted |
 | [0010](0010-serve-the-maplibre-worker-from-our-own-origin.md) | Serve MapLibre's Web Worker from our own `public/` directory | Accepted |
 | [0011](0011-precompute-whole-archive-analytics.md) | Precompute whole-archive analytics instead of indexing for them | Accepted |
+| [0012](0012-give-the-copilot-tools-not-a-query-language.md) | Give the copilot tools, not a query language | Accepted |
 
-Number 0004 and 0012+ are reserved for further frontend, 3D, and AI decisions
+Number 0004 and 0013+ are reserved for further frontend, 3D, and AI decisions
 recorded as those subsystems land.
 
 ## Evidence
