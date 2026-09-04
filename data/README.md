@@ -49,6 +49,51 @@ NaviSight never writes to the source file. It is treated as immutable input.
 | `samples/` | Small, hand-checkable synthetic AIS fixtures with the real schema. Used by tests and by anyone who wants to run the pipeline without downloading 577 MiB. Synthetic — no real vessel appears here. |
 | `reference/` | Small reference lookups (for example port reference data, once configured). Large downloads land here and are git-ignored; only the loader and a `.gitkeep` are tracked. |
 
+## Port reference data (optional)
+
+NaviSight ships **no port gazetteer**, and does not derive one from the AIS
+data. The source contains no port information, and inventing place names to sit
+beside real vessel positions is exactly the fabrication
+[SOUL.md §9](../SOUL.md) forbids. Until you load one, every port surface reports
+`PORT_DATA_NOT_CONFIGURED` and explains what to do — which is a different
+statement from an empty list.
+
+Bring your own registry. The U.S. NGA **World Port Index** is public domain and
+maps onto the schema below directly; any other gazetteer you have the rights to
+use works equally well.
+
+```bash
+cd apps/api
+uv run navisight-data ports load ../../data/reference/your-ports.csv
+uv run navisight-data ports clear          # remove it again
+```
+
+### Schema
+
+CSV columns (a `FeatureCollection` of GeoJSON points works too, with the same
+property names):
+
+| Column | Required | Notes |
+|---|---|---|
+| `id` | yes | Stable identifier; re-loading updates in place by this key. |
+| `name` | yes | |
+| `latitude` | yes | Decimal degrees, −90…90. |
+| `longitude` | yes | Decimal degrees, −180…180. |
+| `country` | no | |
+| `unlocode` | no | |
+| `harbourSize` | no | Free text as the registry states it. |
+| `harbourType` | no | Free text as the registry states it. |
+
+Any other column is ignored, so a fifty-column export needs no preprocessing.
+
+A malformed row **aborts the load** rather than being skipped: a port list is
+small and hand-fixable, and silently dropping entries would leave you believing
+you had loaded a complete registry.
+
+Loaded files belong in `reference/` and are git-ignored — NaviSight does not
+redistribute someone else's registry any more than it redistributes the AIS
+file.
+
 Derived **statistics** about the real dataset — row counts, null rates,
 distributions — are committed under `docs/data/`. Those are aggregates, not
 data, and they are what makes the profiling claims in the README verifiable.

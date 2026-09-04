@@ -231,6 +231,35 @@ class NearbyVessel(ApiModel):
     )
 
 
+class Port(ApiModel):
+    """One port from the loaded reference gazetteer.
+
+    ``source`` names the file it came from, because a port is the one thing in
+    NaviSight that did not come from the AIS archive and the user is entitled to
+    know which registry they are looking at.
+    """
+
+    id: str
+    name: str
+    coordinates: Coordinates
+    country: str | None = None
+    unlocode: str | None = None
+    harbour_size: str | None = Field(default=None, serialization_alias="harbourSize")
+    harbour_type: str | None = Field(default=None, serialization_alias="harbourType")
+    source: str
+
+
+class PortActivity(ApiModel):
+    """Vessels near a port at their latest observation in the archive."""
+
+    port: Port
+    radius_km: float = Field(serialization_alias="radiusKm")
+    vessels: list[NearbyVessel]
+    truncated: bool = Field(
+        description="True when more vessels were within the radius than the limit allows."
+    )
+
+
 # ---------------------------------------------------------------------------
 # Analytics
 # ---------------------------------------------------------------------------

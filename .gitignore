@@ -26,6 +26,8 @@ data/raw/
 data/processed/
 data/local/
 data/reference/*.csv
+data/reference/*.json
+data/reference/*.geojson
 !data/reference/.gitkeep
 *.csv.gz
 *.csv.zip

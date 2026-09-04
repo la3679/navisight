@@ -21,6 +21,8 @@ import {
   latestObservationSchema,
   mapResponseSchema,
   nearbyVesselSchema,
+  portActivitySchema,
+  portSchema,
   paginatedObservationsSchema,
   readySchema,
   speedDistributionSchema,
@@ -75,7 +77,9 @@ export class ApiClientError extends Error {
 }
 
 function classify(status: number, code: string): ApiFailureKind {
-  if (code === "AI_NOT_CONFIGURED") return "not_configured";
+  if (code === "AI_NOT_CONFIGURED" || code === "PORT_DATA_NOT_CONFIGURED") {
+    return "not_configured";
+  }
   if (code === "DATABASE_UNAVAILABLE" || status === 503) return "unavailable";
   if (status === 404) return "not_found";
   if (status === 400 || status === 422) return "validation";
@@ -214,6 +218,14 @@ export const api = {
     limit?: number;
     vesselType?: number;
   }) => request(zod.array(nearbyVesselSchema), "/api/v1/geo/nearby", params),
+
+  ports: (params: { q?: string; limit?: number; skip?: number } = {}) =>
+    request(zod.array(portSchema), "/api/v1/ports", params),
+
+  port: (portId: string) => request(portSchema, `/api/v1/ports/${portId}`),
+
+  portActivity: (portId: string, params: { radiusKm?: number; limit?: number } = {}) =>
+    request(portActivitySchema, `/api/v1/ports/${portId}/activity`, params),
 
   traffic: (params: { start?: string; end?: string; interval?: "hour" | "15min" } = {}) =>
     request(trafficResponseSchema, "/api/v1/analytics/traffic", params),

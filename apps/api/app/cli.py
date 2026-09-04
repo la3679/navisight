@@ -38,6 +38,7 @@ from app.ingest.runs import (
     start_run,
     validate_import,
 )
+from app.services import ports as ports_service
 from app.services import rollup as rollup_service
 
 app = typer.Typer(
@@ -387,6 +388,72 @@ def import_command(
     except Exception as exc:
         typer.secho(f"Import failed: {exc}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=1) from exc
+
+
+ports_app = typer.Typer(help="Optional port reference data.", no_args_is_help=True)
+app.add_typer(ports_app, name="ports")
+
+
+@ports_app.command("load")
+def ports_load_command(
+    source: Annotated[
+        Path,
+        typer.Argument(
+            help="CSV or GeoJSON gazetteer. Required CSV columns: "
+            "id, name, latitude, longitude. Optional: country, unlocode, "
+            "harbourSize, harbourType."
+        ),
+    ],
+    database_name: Annotated[
+        str | None, typer.Option("--database", help="Override MONGODB_DATABASE.")
+    ] = None,
+) -> None:
+    """Load port reference data from a file you supply.
+
+    NaviSight ships no port gazetteer. The AIS source contains none, and
+    inventing place names to sit beside real vessel positions is exactly the
+    fabrication SOUL.md §9 forbids. Bring your own registry — the U.S. NGA
+    World Port Index is public domain and maps onto this schema directly.
+
+    A malformed row aborts the run rather than being skipped: a port list is
+    small and hand-fixable, and a silent drop would leave you believing you had
+    loaded a complete registry.
+    """
+    try:
+        with sync_database(database_name=database_name) as database:
+            typer.echo(f"Loading ports from {source} into '{database.name}'")
+            summary = ports_service.load(database, source)
+    except ports_service.PortLoadError as exc:
+        typer.secho(f"Could not read {source}: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+    except Exception as exc:
+        typer.secho(f"Port load failed: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo("")
+    typer.echo(f"  source   {summary['source']}")
+    typer.echo(f"  written  {summary['written']:,}")
+    typer.echo(f"  total    {summary['total']:,}")
+    typer.secho("Port reference data loaded.", fg=typer.colors.GREEN)
+
+
+@ports_app.command("clear")
+def ports_clear_command(
+    database_name: Annotated[
+        str | None, typer.Option("--database", help="Override MONGODB_DATABASE.")
+    ] = None,
+    yes: Annotated[bool, typer.Option("--yes", help="Skip the confirmation prompt.")] = False,
+) -> None:
+    """Remove all loaded port reference data."""
+    with sync_database(database_name=database_name) as database:
+        count = database[db_collections.PORTS].estimated_document_count()
+        if count == 0:
+            typer.echo("No port data is loaded.")
+            return
+        if not yes:
+            typer.confirm(f"Delete {count:,} ports from '{database.name}'?", abort=True)
+        database[db_collections.PORTS].delete_many({})
+        typer.secho(f"Removed {count:,} ports.", fg=typer.colors.GREEN)
 
 
 @app.command("rollup")

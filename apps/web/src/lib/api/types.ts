@@ -142,6 +142,25 @@ export const nearbyVesselSchema = z.object({
   speedOverGroundKnots: z.number().nullable().default(null),
 });
 
+export const portSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  coordinates: coordinatesSchema,
+  country: z.string().nullable().default(null),
+  unlocode: z.string().nullable().default(null),
+  harbourSize: z.string().nullable().default(null),
+  harbourType: z.string().nullable().default(null),
+  /** Which gazetteer file this port came from. Ports are not AIS data. */
+  source: z.string(),
+});
+
+export const portActivitySchema = z.object({
+  port: portSchema,
+  radiusKm: z.number(),
+  vessels: z.array(nearbyVesselSchema),
+  truncated: z.boolean(),
+});
+
 export const timeBucketSchema = z.object({
   bucket: z.string(),
   observations: z.number(),
@@ -272,6 +291,8 @@ export type MapVessel = z.infer<typeof mapVesselSchema>;
 export type MapCluster = z.infer<typeof mapClusterSchema>;
 export type MapResponse = z.infer<typeof mapResponseSchema>;
 export type NearbyVessel = z.infer<typeof nearbyVesselSchema>;
+export type Port = z.infer<typeof portSchema>;
+export type PortActivity = z.infer<typeof portActivitySchema>;
 export type TrafficResponse = z.infer<typeof trafficResponseSchema>;
 export type DistributionResponse = z.infer<typeof distributionResponseSchema>;
 export type SpeedDistribution = z.infer<typeof speedDistributionSchema>;

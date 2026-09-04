@@ -26,11 +26,13 @@ from app.api.deps import (
 )
 from app.config import get_settings
 from app.db.client import ping
+from app.domain.geo import MAX_RADIUS_KM
 from app.domain.vessel_types import nav_status_codes
 from app.errors import ErrorResponse, VesselNotFoundError
 from app.services import analytics as analytics_service
 from app.services import dataset as dataset_service
 from app.services import geo as geo_service
+from app.services import ports as ports_service
 from app.services import vessels as vessels_service
 
 router = APIRouter(
@@ -251,6 +253,69 @@ async def map_vessels(
         max_speed=max_speed,
         at_time=at,
     )
+
+
+# ---------------------------------------------------------------------------
+# Ports (optional reference data)
+# ---------------------------------------------------------------------------
+PORT_RESPONSES: dict[int | str, dict[str, Any]] = {
+    409: {
+        "model": ErrorResponse,
+        "description": "No port reference data has been loaded (PORT_DATA_NOT_CONFIGURED)",
+    }
+}
+
+
+@router.get("/ports", response_model=list[schemas.Port], tags=["ports"], responses=PORT_RESPONSES)
+async def list_ports(
+    database: Db,
+    q: Annotated[
+        str | None, Query(max_length=120, description="Name, country, or UN/LOCODE.")
+    ] = None,
+    limit: LimitParam = 50,
+    skip: Annotated[int, Query(ge=0, le=10_000)] = 0,
+) -> list[schemas.Port]:
+    """Ports from the loaded reference gazetteer.
+
+    NaviSight ships no port list: the AIS source contains none, and inventing
+    one would place fabricated names beside real positions. Until a gazetteer is
+    loaded this returns 409 `PORT_DATA_NOT_CONFIGURED` rather than an empty
+    array, so a client can tell "not set up" from "no matches".
+    """
+    return await ports_service.search(database, query=q, limit=limit, skip=skip)
+
+
+@router.get(
+    "/ports/{port_id}",
+    response_model=schemas.Port,
+    tags=["ports"],
+    responses={**PORT_RESPONSES, 404: {"model": ErrorResponse, "description": "Unknown port"}},
+)
+async def get_port(database: Db, port_id: Annotated[str, Path(max_length=64)]) -> schemas.Port:
+    """One port from the loaded reference data."""
+    return await ports_service.get(database, port_id)
+
+
+@router.get(
+    "/ports/{port_id}/activity",
+    response_model=schemas.PortActivity,
+    tags=["ports"],
+    responses={**PORT_RESPONSES, 404: {"model": ErrorResponse, "description": "Unknown port"}},
+)
+async def port_activity(
+    database: Db,
+    port_id: Annotated[str, Path(max_length=64)],
+    radius_km: Annotated[float, Query(gt=0, le=MAX_RADIUS_KM, alias="radiusKm")] = 15.0,
+    limit: LimitParam = 50,
+) -> schemas.PortActivity:
+    """Vessels whose last archived position falls within a radius of the port.
+
+    This is **proximity, not a port call**. AIS records where a vessel was; it
+    does not say that the vessel berthed, loaded, or was bound for the port it
+    happens to be near. A vessel transiting past at 12 knots appears here on the
+    same footing as one alongside.
+    """
+    return await ports_service.activity(database, port_id, radius_km=radius_km, limit=limit)
 
 
 # ---------------------------------------------------------------------------
