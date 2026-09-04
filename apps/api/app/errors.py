@@ -100,8 +100,10 @@ class AiNotConfiguredError(ApiError):
         super().__init__(
             ErrorCode.AI_NOT_CONFIGURED,
             (
-                "The AI copilot is not configured. Set LLM_PROVIDER, LLM_MODEL, and "
-                "LLM_API_KEY, or use LLM_PROVIDER=mock for an offline demo."
+                "The AI copilot is not configured. Set LLM_PROVIDER=openai with "
+                "OPENAI_API_KEY in the backend environment, or LLM_PROVIDER=mock "
+                "for the deterministic offline provider. Every other NaviSight "
+                "feature works without it."
             ),
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         )

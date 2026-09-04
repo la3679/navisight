@@ -5,8 +5,10 @@ repository root. Everything is validated at startup: a bad value should fail
 loudly here rather than surface as a confusing error deep inside a query.
 
 Nothing in this module may be sent to the browser. Secrets live only in
-``LLM_API_KEY`` and the MongoDB URI, and neither is ever serialized into an API
-response.
+``OPENAI_API_KEY`` and the MongoDB URI, and neither is ever serialized into an
+API response, written to a log, or exposed through a ``NEXT_PUBLIC_*``
+variable — that namespace belongs to the frontend build and nothing here is
+read there.
 """
 
 from __future__ import annotations
@@ -58,9 +60,22 @@ class Settings(BaseSettings):
     # Empty provider means the AI feature is disabled. The application must
     # still start and serve every other route (SOUL.md §11: not-configured is
     # a first-class state, not a crash).
-    llm_provider: Literal["", "anthropic", "openai", "mock"] = ""
+    #
+    # The literal lists only providers that are actually implemented, so a
+    # deployment cannot be configured for something that does not exist.
+    llm_provider: Literal["", "openai", "mock"] = ""
     llm_model: str = ""
-    llm_api_key: str = ""
+
+    #: The OpenAI credential, read only from the backend environment.
+    #:
+    #: Named for its provider rather than generically, because that is what a
+    #: reader looking for "where does the key come from" searches for, and
+    #: because a shared LLM_API_KEY invites pointing two providers at one value.
+    #:
+    #: This is never serialized into a response, never logged, and can never
+    #: reach the browser: NEXT_PUBLIC_* is a *frontend* build-time namespace and
+    #: this variable is only ever read here. `.env.example` ships it blank.
+    openai_api_key: str = ""
 
     agent_max_tool_calls: int = Field(default=8, ge=1, le=32)
     agent_timeout_seconds: int = Field(default=60, ge=5, le=300)
@@ -92,7 +107,7 @@ class Settings(BaseSettings):
             return False
         if self.llm_provider == "mock":
             return True
-        return bool(self.llm_api_key)
+        return bool(self.openai_api_key)
 
 
 @lru_cache(maxsize=1)

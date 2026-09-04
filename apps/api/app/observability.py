@@ -28,6 +28,7 @@ request_id_var: ContextVar[str] = ContextVar("request_id", default="-")
 
 _SENSITIVE_KEYS = frozenset(
     {
+        "openai_api_key",
         "llm_api_key",
         "api_key",
         "apikey",

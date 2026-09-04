@@ -19,10 +19,12 @@ dependencies = [
 [project.optional-dependencies]
 # AI copilot. The application starts and serves every non-AI route without
 # these installed; AI surfaces then report "provider not configured".
+# One dependency: the provider SDK. The agent loop, the tool registry, the
+# bounds and the evidence record are ~400 lines of application code here — an
+# orchestration framework would add a graph abstraction over a while-loop and
+# hide the guarantees that are the entire point of it (SOUL.md §15).
 ai = [
-    "langgraph>=0.2.50",
-    "langchain-core>=0.3.20",
-    "anthropic>=0.40",
+    "openai>=1.60",
 ]
 
 [dependency-groups]
