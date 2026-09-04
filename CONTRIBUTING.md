@@ -20,6 +20,16 @@ cp .env.example .env          # PowerShell: Copy-Item .env.example .env
 docker compose up -d mongodb  # skip if you already run mongod on 27017
 ```
 
+After importing AIS data, build the analytics rollups:
+
+```bash
+cd apps/api && uv run navisight-data rollup
+```
+
+Skipping it is safe but slow: the analytics endpoints fall back to aggregating
+5.9M documents per request, which measured over 40 seconds each. See
+[ADR-0011](docs/adr/0011-precompute-whole-archive-analytics.md).
+
 Then follow [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md),
 which is the authoritative setup guide and works on PowerShell as well as
 bash — Windows is a first-class development environment here, not an

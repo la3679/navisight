@@ -36,6 +36,11 @@ AGENT_RUNS: Final = "agent_runs"
 #: degrade to a "not configured" state rather than failing.
 PORTS: Final = "ports"
 
+#: Precomputed whole-archive analytics. Derived data: rebuilt from
+#: ``vessel_positions`` by ``navisight-data rollup`` and safe to drop. See
+#: ``app/services/rollup.py`` for the measurement that justifies it.
+ANALYTICS_ROLLUP: Final = "analytics_rollup"
+
 ALL_COLLECTIONS: Final[tuple[str, ...]] = (
     VESSELS,
     VESSEL_POSITIONS,
@@ -43,12 +48,16 @@ ALL_COLLECTIONS: Final[tuple[str, ...]] = (
     INGESTION_RUNS,
     AGENT_RUNS,
     PORTS,
+    ANALYTICS_ROLLUP,
 )
 
 #: Collections the AIS import writes to. `navisight-data reset` clears exactly
-#: these, leaving ports and agent traces alone.
+#: these, leaving ports and agent traces alone. The rollup is included because
+#: it is derived from them: leaving it behind after a reset would strand a
+#: summary of data that no longer exists.
 AIS_COLLECTIONS: Final[tuple[str, ...]] = (
     VESSELS,
     VESSEL_POSITIONS,
     VESSEL_LATEST,
+    ANALYTICS_ROLLUP,
 )

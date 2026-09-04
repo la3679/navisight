@@ -246,6 +246,15 @@ class TrafficResponse(ApiModel):
     start: datetime
     end: datetime
     total_observations: int = Field(serialization_alias="totalObservations")
+    computed_at: datetime | None = Field(
+        default=None,
+        serialization_alias="computedAt",
+        description=(
+            "When these figures were computed, if they came from the precomputed "
+            "rollup. Absent means they were aggregated live for this request. The "
+            "numbers are identical either way; this says which path produced them."
+        ),
+    )
 
 
 class CategoryCount(ApiModel):
@@ -274,6 +283,14 @@ class SpeedDistributionResponse(ApiModel):
     buckets: list[SpeedBucket]
     total: int
     note: str
+    computed_at: datetime | None = Field(
+        default=None,
+        serialization_alias="computedAt",
+        description=(
+            "When these figures were computed, if they came from the precomputed "
+            "rollup. Absent means they were aggregated live for this request."
+        ),
+    )
 
 
 class ActiveVessel(ApiModel):

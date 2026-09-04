@@ -18,8 +18,9 @@ not finished.
 | [0008](0008-use-historical-replay-not-live-simulation.md) | Present data as historical replay, never live tracking | Accepted |
 | [0009](0009-treat-source-timestamps-as-utc.md) | Treat source timestamps as UTC and store UTC internally | Accepted |
 | [0010](0010-serve-the-maplibre-worker-from-our-own-origin.md) | Serve MapLibre's Web Worker from our own `public/` directory | Accepted |
+| [0011](0011-precompute-whole-archive-analytics.md) | Precompute whole-archive analytics instead of indexing for them | Accepted |
 
-Number 0004 and 0011+ are reserved for further frontend, 3D, and AI decisions
+Number 0004 and 0012+ are reserved for further frontend, 3D, and AI decisions
 recorded as those subsystems land.
 
 ## Evidence

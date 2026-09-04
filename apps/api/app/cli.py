@@ -38,6 +38,7 @@ from app.ingest.runs import (
     start_run,
     validate_import,
 )
+from app.services import rollup as rollup_service
 
 app = typer.Typer(
     name="navisight-data",
@@ -386,6 +387,47 @@ def import_command(
     except Exception as exc:
         typer.secho(f"Import failed: {exc}", fg=typer.colors.RED, err=True)
         raise typer.Exit(code=1) from exc
+
+
+@app.command("rollup")
+def rollup_command(
+    database_name: Annotated[
+        str | None, typer.Option("--database", help="Override MONGODB_DATABASE.")
+    ] = None,
+) -> None:
+    """Precompute whole-archive analytics.
+
+    Three analytics queries aggregate every stored observation when asked for
+    the whole archive, which measured 43.6 s, 38.4 s and 31.8 s here. No index
+    makes them selective — the window *is* the dataset — so the answers are
+    computed once and stored. See ``app/services/rollup.py`` for the
+    measurement and the covering index that was tried and rejected.
+
+    Safe to re-run. Safe to skip: the API falls back to the live aggregation
+    and returns the same numbers, slowly. Run it after every import.
+    """
+    try:
+        with sync_database(database_name=database_name) as database:
+            typer.echo(f"Building analytics rollups in '{database.name}'")
+            summary = rollup_service.build(database)
+    except Exception as exc:
+        typer.secho(f"Rollup failed: {exc}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1) from exc
+
+    if summary.get("built", 0) == 0:
+        typer.secho(
+            f"Nothing to roll up: {summary.get('reason', 'unknown')}.",
+            fg=typer.colors.YELLOW,
+        )
+        return
+
+    typer.echo("")
+    typer.echo(f"  coverage           {summary['coverageStart']} -> {summary['coverageEnd']}")
+    typer.echo(f"  source documents   {summary['sourceDocumentCount']:,}")
+    for kind, seconds in summary["seconds"].items():
+        typer.echo(f"  {kind:<20} {seconds:>8.2f} s")
+    typer.echo("")
+    typer.secho(f"{summary['built']} rollups written.", fg=typer.colors.GREEN)
 
 
 @app.command("validate")
