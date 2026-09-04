@@ -1,0 +1,322 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   NaviSight design tokens
+
+   Direction: a maritime operations instrument. Calm, dense where density is
+   earned, legible under sustained use. Deliberately not a neon SOC dashboard
+   (SOUL.md §11).
+
+   Dark-first, because the map is the product and a dark ground lets vessel
+   marks and bathymetry carry the contrast. Light mode is fully supported.
+
+   Colour is defined once here as tokens. Components never hardcode a hex.
+   ========================================================================== */
+
+@theme {
+  /* --- Typography ------------------------------------------------------ */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo,
+    Consolas, monospace;
+
+  /* --- Motion ---------------------------------------------------------- */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* --------------------------------------------------------------------------
+   Palette — dark (default)
+
+   Surfaces are a deep ocean blue-slate rather than neutral grey: it reads as
+   maritime without tinting the data marks, and it is the surface the
+   categorical palette below was validated against.
+   -------------------------------------------------------------------------- */
+:root {
+  color-scheme: dark;
+
+  --ns-bg: #0a111a;
+  --ns-surface: #101822;
+  --ns-surface-raised: #16202c;
+  --ns-surface-overlay: #1b2734;
+  --ns-border: #223040;
+  --ns-border-strong: #2e4054;
+
+  --ns-text: #eef4fa;
+  --ns-text-secondary: #a7b8c9;
+  --ns-text-muted: #78899b;
+
+  /* Interactive accent: seafoam. Used for focus, selection, and primary
+     actions — never for a data series, so "selected" is never confused with
+     a category. */
+  --ns-accent: #4fd1c5;
+  --ns-accent-strong: #2bb3a6;
+  --ns-accent-contrast: #04241f;
+
+  /* Status. Reserved: never reused as a chart series colour. */
+  --ns-info: #3987e5;
+  --ns-warning: #c98500;
+  --ns-critical: #e66767;
+  --ns-good: #199e70;
+
+  /* Categorical series, validated against --ns-surface (#101822) with
+     scripts/validate_palette.js: lightness band, chroma floor, adjacent-pair
+     CVD separation, normal-vision floor, and 3:1 contrast all PASS. */
+  --ns-series-1: #3987e5;
+  --ns-series-2: #d95926;
+  --ns-series-3: #199e70;
+  --ns-series-4: #c98500;
+  --ns-series-5: #d55181;
+  --ns-series-6: #008300;
+  --ns-series-7: #9085e9;
+  --ns-series-8: #e66767;
+  --ns-series-other: #64748b;
+
+  /* Sequential ramp (single hue, light -> dark) for magnitude: density
+     clusters, speed. Never a rainbow. */
+  --ns-seq-1: #0b3d5c;
+  --ns-seq-2: #10577f;
+  --ns-seq-3: #1673a3;
+  --ns-seq-4: #2f92c4;
+  --ns-seq-5: #5fb3dd;
+  --ns-seq-6: #9ad3ef;
+
+  --ns-grid: #1c2836;
+  --ns-focus: #4fd1c5;
+}
+
+/* --------------------------------------------------------------------------
+   Palette — light
+
+   A selected set, not an inverted one: the categorical hues are the light
+   steps of the same eight, validated against the light surface (#f7f9fb).
+   Three of them fall below 3:1 contrast there, so charts in light mode carry
+   direct labels and a table view (the validator's "relief" requirement).
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --ns-bg: #eef2f6;
+    --ns-surface: #f7f9fb;
+    --ns-surface-raised: #ffffff;
+    --ns-surface-overlay: #ffffff;
+    --ns-border: #d3dce6;
+    --ns-border-strong: #b3c1d0;
+
+    --ns-text: #0d1720;
+    --ns-text-secondary: #3d4f61;
+    --ns-text-muted: #5f7285;
+
+    --ns-accent: #0d8b80;
+    --ns-accent-strong: #0a6f66;
+    --ns-accent-contrast: #ffffff;
+
+    --ns-info: #2a78d6;
+    --ns-warning: #a86e00;
+    --ns-critical: #c8322f;
+    --ns-good: #0f7d57;
+
+    --ns-series-1: #2a78d6;
+    --ns-series-2: #eb6834;
+    --ns-series-3: #1baf7a;
+    --ns-series-4: #eda100;
+    --ns-series-5: #e87ba4;
+    --ns-series-6: #008300;
+    --ns-series-7: #4a3aa7;
+    --ns-series-8: #e34948;
+    --ns-series-other: #7a8a9a;
+
+    --ns-seq-1: #d6e9f5;
+    --ns-seq-2: #a9d3ec;
+    --ns-seq-3: #6fb6dc;
+    --ns-seq-4: #3993c5;
+    --ns-seq-5: #1c6f9e;
+    --ns-seq-6: #0d4d72;
+
+    --ns-grid: #e0e7ee;
+    --ns-focus: #0d8b80;
+  }
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --ns-bg: #eef2f6;
+  --ns-surface: #f7f9fb;
+  --ns-surface-raised: #ffffff;
+  --ns-surface-overlay: #ffffff;
+  --ns-border: #d3dce6;
+  --ns-border-strong: #b3c1d0;
+
+  --ns-text: #0d1720;
+  --ns-text-secondary: #3d4f61;
+  --ns-text-muted: #5f7285;
+
+  --ns-accent: #0d8b80;
+  --ns-accent-strong: #0a6f66;
+  --ns-accent-contrast: #ffffff;
+
+  --ns-info: #2a78d6;
+  --ns-warning: #a86e00;
+  --ns-critical: #c8322f;
+  --ns-good: #0f7d57;
+
+  --ns-series-1: #2a78d6;
+  --ns-series-2: #eb6834;
+  --ns-series-3: #1baf7a;
+  --ns-series-4: #eda100;
+  --ns-series-5: #e87ba4;
+  --ns-series-6: #008300;
+  --ns-series-7: #4a3aa7;
+  --ns-series-8: #e34948;
+  --ns-series-other: #7a8a9a;
+
+  --ns-seq-1: #d6e9f5;
+  --ns-seq-2: #a9d3ec;
+  --ns-seq-3: #6fb6dc;
+  --ns-seq-4: #3993c5;
+  --ns-seq-5: #1c6f9e;
+  --ns-seq-6: #0d4d72;
+
+  --ns-grid: #e0e7ee;
+  --ns-focus: #0d8b80;
+}
+
+/* Expose the tokens to Tailwind utilities (bg-surface, text-muted, ...). */
+@theme inline {
+  --color-bg: var(--ns-bg);
+  --color-surface: var(--ns-surface);
+  --color-raised: var(--ns-surface-raised);
+  --color-overlay: var(--ns-surface-overlay);
+  --color-line: var(--ns-border);
+  --color-line-strong: var(--ns-border-strong);
+
+  --color-ink: var(--ns-text);
+  --color-ink-secondary: var(--ns-text-secondary);
+  --color-ink-muted: var(--ns-text-muted);
+
+  --color-accent: var(--ns-accent);
+  --color-accent-strong: var(--ns-accent-strong);
+  --color-accent-contrast: var(--ns-accent-contrast);
+
+  --color-info: var(--ns-info);
+  --color-warning: var(--ns-warning);
+  --color-critical: var(--ns-critical);
+  --color-good: var(--ns-good);
+
+  --color-grid: var(--ns-grid);
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+* {
+  border-color: var(--ns-border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--ns-bg);
+  color: var(--ns-text);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Numbers in tables and readouts must align column-wise and not jitter as
+   values update during replay. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Visible focus everywhere. Never `outline: none` without a replacement
+   (SOUL.md §12). */
+:focus-visible {
+  outline: 2px solid var(--ns-focus);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Skip link: present but out of the way until focused. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--ns-surface-overlay);
+  border: 1px solid var(--ns-border-strong);
+  border-radius: 6px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--ns-accent) 30%, transparent);
+}
+
+/* Scrollbars that do not shout. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ns-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--ns-border-strong);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion — honoured by every animation, including 3D (SOUL.md §12).
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes ns-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.ns-skeleton {
+  background: var(--ns-surface-raised);
+  animation: ns-pulse 1.6s var(--ease-out-quart) infinite;
+}
+
+/* MapLibre chrome, restyled to the design system rather than left default. */
+.maplibregl-ctrl-attrib {
+  background: color-mix(in oklab, var(--ns-surface) 85%, transparent) !important;
+  color: var(--ns-text-muted) !important;
+  font-size: 10px !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--ns-text-secondary) !important;
+}
+.maplibregl-canvas:focus-visible {
+  outline: 2px solid var(--ns-focus);
+  outline-offset: -2px;
+}
