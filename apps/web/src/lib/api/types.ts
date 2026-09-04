@@ -267,6 +267,66 @@ export const readySchema = z.object({
   aiConfigured: z.boolean(),
 });
 
+/* ------------------------------------------------------------------ Copilot */
+
+/**
+ * How strongly a claim is supported. A closed set, and ordered here weakest
+ * last — the UI renders the label beside every claim so an interpretation
+ * cannot wear the voice of an observation.
+ */
+export const agentClaimKindSchema = z.enum([
+  "observed",
+  "derived",
+  "heuristic",
+  "interpretation",
+]);
+
+export const agentClaimSchema = z.object({
+  text: z.string(),
+  kind: agentClaimKindSchema,
+});
+
+/**
+ * One tool the copilot ran.
+ *
+ * `arguments` and `result` are deliberately unconstrained: they are whatever
+ * that tool takes and returns, and the UI renders them as inspectable JSON
+ * rather than pretending to know their shape. This is the evidence a reader
+ * checks the prose against.
+ */
+export const agentToolCallSchema = z.object({
+  name: z.string(),
+  arguments: z.record(z.string(), z.unknown()),
+  ok: z.boolean(),
+  durationMs: z.number(),
+  result: z.record(z.string(), z.unknown()).nullable().default(null),
+  error: z.string().nullable().default(null),
+});
+
+export const agentAnswerSchema = z.object({
+  runId: z.string(),
+  question: z.string(),
+  answer: z.string(),
+  claims: z.array(agentClaimSchema),
+  limitations: z.string(),
+  evidence: z.array(agentToolCallSchema),
+  provider: z.string(),
+  model: z.string(),
+  truncated: z.boolean(),
+  durationMs: z.number(),
+  usage: z.record(z.string(), z.number()).default({}),
+});
+
+export const agentStatusSchema = z.object({
+  configured: z.boolean(),
+  provider: z.string(),
+  model: z.string(),
+  deterministic: z.boolean(),
+  maxToolCalls: z.number(),
+  timeoutSeconds: z.number(),
+  tools: z.array(z.object({ name: z.string(), description: z.string() })),
+});
+
 /** The API's error envelope. Shared by every failing response. */
 export const apiErrorSchema = z.object({
   error: z.object({
@@ -300,3 +360,8 @@ export type ActiveVessel = z.infer<typeof activeVesselSchema>;
 export type DatasetStatus = z.infer<typeof datasetStatusSchema>;
 export type DataQuality = z.infer<typeof dataQualitySchema>;
 export type Ready = z.infer<typeof readySchema>;
+export type AgentClaimKind = z.infer<typeof agentClaimKindSchema>;
+export type AgentClaim = z.infer<typeof agentClaimSchema>;
+export type AgentToolCall = z.infer<typeof agentToolCallSchema>;
+export type AgentAnswer = z.infer<typeof agentAnswerSchema>;
+export type AgentStatus = z.infer<typeof agentStatusSchema>;

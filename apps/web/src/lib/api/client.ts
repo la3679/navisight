@@ -13,6 +13,8 @@
 import type { z } from "zod";
 
 import {
+  agentAnswerSchema,
+  agentStatusSchema,
   apiErrorSchema,
   activeVesselSchema,
   dataQualitySchema,
@@ -113,6 +115,11 @@ async function request<T>(
       headers: { Accept: "application/json", ...(init?.headers ?? {}) },
     });
   } catch (cause) {
+    // An abort is the user changing their mind, not a failure. Reporting it as
+    // "could not reach the API" would blame the network for their own click.
+    if (cause instanceof DOMException && cause.name === "AbortError") {
+      throw cause;
+    }
     // A thrown fetch means the API was unreachable, which is a different
     // problem from an API that answered with an error.
     throw new ApiClientError({
@@ -241,4 +248,21 @@ export const api = {
 
   activeVessels: (params: { start?: string; end?: string; limit?: number } = {}) =>
     request(zod.array(activeVesselSchema), "/api/v1/analytics/active-vessels", params),
+
+  agentStatus: () => request(agentStatusSchema, "/api/v1/agent/status"),
+
+  /**
+   * Ask the copilot one question.
+   *
+   * A POST with a JSON body, unlike everything else here, and it is the only
+   * call in the app that can take tens of seconds — the server bounds it, and
+   * `signal` lets the user abandon it before then.
+   */
+  ask: (question: string, signal?: AbortSignal) =>
+    request(agentAnswerSchema, "/api/v1/agent/ask", undefined, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+      signal,
+    }),
 };
