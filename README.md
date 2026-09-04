@@ -248,6 +248,7 @@ commit the dataset.
 |---|---|
 | Engineering constitution | [`SOUL.md`](SOUL.md) |
 | Architecture | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
+| Final audit | [`docs/AUDIT.md`](docs/AUDIT.md) |
 | Decision records | [`docs/adr/`](docs/adr/) |
 | Local development | [`docs/operations/LOCAL_DEVELOPMENT.md`](docs/operations/LOCAL_DEVELOPMENT.md) |
 | Data model | [`docs/database/DATA_MODEL.md`](docs/database/DATA_MODEL.md) |
