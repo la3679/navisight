@@ -97,6 +97,28 @@ Drawn directly from [`SOUL.md`](SOUL.md) §17:
 - A new dependency without a stated reason the platform cannot do the job.
 - Failing tests in a change marked complete.
 
+## Optional: code-graph navigation
+
+[Graphify](https://pypi.org/project/graphify-ai/) can index this repository into
+a queryable symbol graph, which is useful for finding call paths and impact
+radii without grepping. It is a **developer aid only** — nothing in the API, the
+web application, or CI imports it, and no build step depends on it.
+
+```bash
+graphify extract . --code-only --no-cluster   # local AST only, no API key
+graphify cluster-only . --no-label            # communities, no LLM naming
+graphify god-nodes --top 10                   # most connected symbols
+graphify affected "parse_row()"               # what a change would touch
+```
+
+`--code-only` and `--no-label` keep the whole thing offline. The semantic modes
+call an LLM; they are optional and were not used to produce anything committed
+here.
+
+Everything Graphify writes lands in `graphify-out/`, which is git-ignored.
+Do not commit it: it is a derived artifact that goes stale the moment the code
+moves.
+
 ## Architecture decisions
 
 Non-obvious or hard-to-reverse decisions get an ADR in [`docs/adr/`](docs/adr/),

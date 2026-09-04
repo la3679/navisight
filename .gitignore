@@ -102,6 +102,9 @@ benchmarks-out/
 .agent/
 graphify-out/
 .graphify/
+.graphify_*.json
+.graphify_cache/
+GRAPH_TREE.html
 .claude/settings.local.json
 
 # --- Logs --------------------------------------------------------------------
