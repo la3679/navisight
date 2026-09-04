@@ -8,7 +8,12 @@ import type { MapRef } from "react-map-gl/maplibre";
 
 import type { VesselTrack } from "@/lib/api/types";
 import { formatTimestamp } from "@/lib/format";
+import { configureMapWorker } from "./map-worker";
 import { resolveMapStyle } from "./map-style";
+
+// MapLibre resolves its worker URL when the first map is constructed, so this
+// has to run at module scope — before React renders <Map />.
+configureMapWorker();
 
 /**
  * A single vessel's path.

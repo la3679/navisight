@@ -18,7 +18,12 @@ import type { MapRef, ViewStateChangeEvent } from "react-map-gl/maplibre";
 import { api } from "@/lib/api/client";
 import type { MapVessel } from "@/lib/api/types";
 import { mapFamilyColor, OTHER_COLOR, resolveColor, SEQUENTIAL_RAMP } from "@/lib/viz/palette";
+import { configureMapWorker, MAP_LOAD_TIMEOUT_MS } from "./map-worker";
 import { DEFAULT_VIEW, FALLBACK_ATTRIBUTION, CUSTOM_STYLE_URL, resolveMapStyle } from "./map-style";
+
+// MapLibre resolves its worker URL when the first map is constructed, so this
+// has to run at module scope — before React renders <Map />.
+configureMapWorker();
 
 /**
  * The operations map.
@@ -52,7 +57,11 @@ function DeckOverlay({ layers }: { layers: Layer[] }) {
   const overlay = useControl<MapboxOverlay>(
     () => new MapboxOverlay({ interleaved: false }),
   );
-  overlay.setProps({ layers });
+  // Pushing layers is a side effect on an object React does not own, so it
+  // belongs in an effect rather than in the render body.
+  React.useEffect(() => {
+    overlay.setProps({ layers });
+  }, [overlay, layers]);
   return null;
 }
 
@@ -94,9 +103,16 @@ export function OperationsMap({
   focus: { longitude: number; latitude: number } | null;
 }) {
   const mapRef = React.useRef<MapRef | null>(null);
+  const [mapInstance, setMapInstance] = React.useState<MapRef | null>(null);
   const style = React.useMemo(() => resolveMapStyle(), []);
   const [viewport, setViewport] = React.useState<{ bounds: Bounds; zoom: number } | null>(null);
   const [hovered, setHovered] = React.useState<MapVessel | null>(null);
+  const [groundFailed, setGroundFailed] = React.useState(false);
+
+  const attachMap = React.useCallback((instance: MapRef | null) => {
+    mapRef.current = instance;
+    setMapInstance(instance);
+  }, []);
 
   const debouncedViewport = useDebounced(viewport, 250);
 
@@ -114,6 +130,38 @@ export function OperationsMap({
       zoom: map.getZoom(),
     });
   }, []);
+
+  /**
+   * Drive the viewport query from the map instance, not from the basemap.
+   *
+   * Vessel marks are deck.gl geometry projected from the camera; they do not
+   * need a single tile of ground. Waiting for `load` — which only fires once
+   * every style source has finished — would make a basemap problem look like
+   * an empty dataset, which is exactly the failure this page shipped with.
+   */
+  React.useEffect(() => {
+    if (!mapInstance) return;
+    const map = mapInstance.getMap();
+    readViewport();
+    if (map.loaded()) return;
+
+    const onLoad = () => {
+      setGroundFailed(false);
+      readViewport();
+    };
+    map.on("load", onLoad);
+
+    // The ground failing is silent by nature — MapLibre simply never finishes.
+    // A deadline turns that into something the user can see (SOUL.md §11).
+    const timer = setTimeout(() => {
+      if (!map.loaded()) setGroundFailed(true);
+    }, MAP_LOAD_TIMEOUT_MS);
+
+    return () => {
+      clearTimeout(timer);
+      map.off("load", onLoad);
+    };
+  }, [mapInstance, readViewport]);
 
   // Fly to a vessel handed in from the detail page.
   React.useEffect(() => {
@@ -228,14 +276,16 @@ export function OperationsMap({
   return (
     <div className="relative size-full">
       <Map
-        ref={mapRef}
+        ref={attachMap}
         mapStyle={style}
         initialViewState={DEFAULT_VIEW}
-        onLoad={readViewport}
         onMove={(event: ViewStateChangeEvent) => {
           if (event.viewState) readViewport();
         }}
         onMoveEnd={readViewport}
+        // A container that grows after mount (a panel opening, a window
+        // resize) changes which vessels are in view, so the query follows it.
+        onResize={readViewport}
         minZoom={1.5}
         maxZoom={16}
         attributionControl={false}
@@ -289,6 +339,20 @@ export function OperationsMap({
           aria-live="polite"
         >
           Loading vessels…
+        </div>
+      ) : null}
+
+      {groundFailed ? (
+        <div
+          className="absolute left-1/2 top-4 z-10 max-w-[min(30rem,90%)] -translate-x-1/2 rounded-md
+                     border border-[color-mix(in_oklab,var(--ns-warning)_45%,transparent)]
+                     bg-[var(--ns-surface-overlay)] px-3 py-2 text-xs text-[var(--ns-text-secondary)]"
+          role="status"
+        >
+          <span className="font-medium text-[var(--ns-warning)]">
+            Basemap could not be drawn.
+          </span>{" "}
+          Vessel positions below are unaffected — only the coastline is missing.
         </div>
       ) : null}
 

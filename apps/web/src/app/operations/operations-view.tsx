@@ -69,10 +69,15 @@ export function OperationsView() {
 
   const focusLon = searchParams.get("lon");
   const focusLat = searchParams.get("lat");
-  const focus =
-    focusLon && focusLat
-      ? { longitude: Number(focusLon), latitude: Number(focusLat) }
-      : null;
+  // Memoised on the raw strings: the map flies to this on identity change, so
+  // a fresh object every render would restart the animation on every render.
+  const focus = React.useMemo(
+    () =>
+      focusLon && focusLat
+        ? { longitude: Number(focusLon), latitude: Number(focusLat) }
+        : null,
+    [focusLon, focusLat],
+  );
   const focusMmsi = searchParams.get("focus");
 
   const filters: MapFilters = React.useMemo(
