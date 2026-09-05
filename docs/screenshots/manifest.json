@@ -1,0 +1,60 @@
+{
+  "capturedAt": "2026-09-05T00:56:00.689Z",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "deviceScaleFactor": 1,
+  "colorScheme": "dark",
+  "dataset": {
+    "name": "NOAA/USCG AIS",
+    "positions": 5928519,
+    "vessels": 16294,
+    "coverage": {
+      "start": "2025-01-08T00:00:00Z",
+      "end": "2025-01-08T23:59:59Z"
+    }
+  },
+  "copilot": {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "question": "Which vessel types are most common in this archive, and which vessels broadcast the most?"
+  },
+  "images": [
+    {
+      "file": "operations-map.png",
+      "route": "/operations",
+      "caption": "Every vessel's last archived position, aggregated by viewport."
+    },
+    {
+      "file": "home-overview.png",
+      "route": "/",
+      "caption": "The overview, with the archive's measured figures."
+    },
+    {
+      "file": "analytics.png",
+      "route": "/analytics",
+      "caption": "Traffic, fleet composition and speed across the archived day."
+    },
+    {
+      "file": "vessel-detail.png",
+      "route": "/vessels/338078000",
+      "caption": "One vessel: its track, its record, and a hull built from its own dimensions."
+    },
+    {
+      "file": "vessel-3d-inspector.png",
+      "route": "/vessels/338078000",
+      "caption": "A generic hull scaled to the vessel's own reported dimensions — labelled as representative, because it is not a model of that ship."
+    },
+    {
+      "file": "dataset.png",
+      "route": "/data",
+      "caption": "What was imported, reconciled against an independent profiling pass."
+    },
+    {
+      "file": "copilot-answer.png",
+      "route": "/copilot",
+      "caption": "A real answer from openai/gpt-4o-mini, with the tool calls behind it."
+    }
+  ]
+}
