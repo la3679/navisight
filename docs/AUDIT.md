@@ -4,6 +4,8 @@ A check of the repository against [`SOUL.md`](../SOUL.md), performed by running
 commands rather than by reading code and forming an impression.
 
 **Audited:** 2026-09-04, at `c9bad4c` on `feat/navisight-platform`.
+**Re-audited:** 2026-09-04, after the real-provider verification below.
+The gate figures and the Outstanding list are from the second pass.
 
 Every row below names how it was checked. Where something failed, it says so and
 links the fix. Where something is outstanding, it says that too — an audit that
@@ -15,14 +17,16 @@ finds nothing has usually not looked.
 
 | | |
 |---|---|
-| Checks run | 21 |
+| Checks run | 21, plus a 12-part real-provider verification |
 | Passed | 17 |
 | **Failed and fixed during the audit period** | **4** |
-| Outstanding, recorded not hidden | 5 |
+| **Failed and fixed during the real-provider verification** | **4** |
+| Outstanding, recorded not hidden | 4 |
 
-The four failures were all found by tooling, not by inspection: two by
-benchmarking, one by `axe`, one by `explain()`. That is the argument for
-measuring rather than reviewing.
+All eight failures were found by tooling or by running the thing, never by
+inspection: two by benchmarking, one by `axe`, one by `explain()`, and four by
+finally pointing the copilot at a real model and every screen at a 375-pixel
+viewport. That is the argument for measuring rather than reviewing.
 
 ---
 
@@ -92,6 +96,14 @@ query-shaped argument fails the suite rather than requiring someone to notice.
 | CORS is an allow-list | read `main.py` | **pass** — explicit origins, enumerated methods and headers |
 | The key never reaches a response | three tests, incl. asserting it is absent from every public attribute | **pass** |
 | CI scans for secrets | `gitleaks` over full history | **pass** — added `e76b4ad`, because SECURITY.md claimed it before it was true |
+| A live key is absent from the working tree | `grep -rlF` for the literal value, excluding `.git` and `.env` | **pass** — 0 files |
+| A live key is absent from every Git object | `git cat-file --batch-all-objects`, including unreachable blobs | **pass** — 0 matches |
+| No key-shaped string is tracked | `sk-[A-Za-z0-9_-]{20,}` over the whole object database | **pass** — one hit, `sk-notarealkey0000000000000000`, a unit-test constant |
+| The provider never logged a credential | `grep -icE 'api[_-]?key\|authorization\|bearer'` over the API log of the whole verification session | **pass** — 0 lines |
+
+The scan reads the key from `.env` into a shell variable and reports only match
+counts and paths. Its value is never printed, and this document does not contain
+it. `.env` is ignored (`git check-ignore`) and untracked (`git ls-files`).
 
 ## §11 UX states
 
@@ -99,6 +111,8 @@ query-shaped argument fails the suite rather than requiring someone to notice.
 |---|---|---|
 | Every view implements loading, error, and empty/not-configured | grep each `*-view.tsx` for the state components | **pass** — all seven |
 | No route 404s | E2E across all seven, asserting an `h1` and no "page could not be found" | **pass** |
+| An unknown route lands somewhere usable | E2E on `/no-such-route` | **fixed** — it rendered Next's default 404, grey on grey inside the shell; now a designed page, in the `axe` sweep |
+| No screen scrolls sideways on a phone | E2E, `scrollWidth` vs `clientWidth` at 375 px on all eight routes | **fixed** — `/copilot` was 20 px over, `/analytics` 42 px |
 | Not-configured is a rendered state, not an error | `/ports` returns 409, `/copilot` renders setup plus the tool catalogue | **pass** |
 
 ## §12 Accessibility
@@ -162,18 +176,26 @@ Run at audit time:
 ```
 apps/api   ruff check            All checks passed!
 apps/api   ruff format --check   52 files already formatted
+apps/api   ruff check scripts    All checks passed!
 apps/api   mypy .                Success: no issues found in 51 source files
-apps/api   pytest                194 passed in 16.89s
+apps/api   pytest                202 passed in 18.09s
 apps/web   eslint                (clean)
 apps/web   tsc --noEmit          (clean)
+apps/web   prettier --check      All matched files use Prettier code style!
 apps/web   vitest run            12 passed
-apps/web   next build            8 routes
-apps/web   playwright test       34 passed in 34s
+apps/web   next build            8 routes + /_not-found
+apps/web   playwright test       44 passed in 37.7s
 ```
 
+`scripts/` was not covered by any gate before this pass: the API's ruff config
+carries a `"scripts/*"` per-file-ignore that could never match, because that
+path resolves inside `apps/api` and the scripts are two directories up. A
+repo-root `ruff.toml` now extends the API's configuration, six findings were
+fixed, and CI runs it.
+
 Also verified live: `openapi.json` serves 23 paths including both agent routes,
-and `agent_runs` holds 7 real traces from copilot questions asked against the
-5.9M-document archive.
+and `agent_runs` holds real traces from copilot questions asked against the
+5.9M-document archive — 13 of them by the end of the real-provider session.
 
 **Type-checker weakening (§17):** three `# type: ignore` comments in the whole
 backend, each narrowed to a specific error code — one for `json.loads` returning
@@ -183,27 +205,77 @@ frontend.
 
 ---
 
+## The real OpenAI provider, verified end to end
+
+The first audit's largest outstanding item was that **the real provider had
+never made a network call**. It has now. This section records what was run, not
+what was expected.
+
+Configuration: `LLM_PROVIDER=openai` in the repository-root `.env`, `LLM_MODEL`
+unset, so the provider's own default answered. The key was supplied by the
+repository owner in `.env` and is not in this document, in any log, in any
+screenshot, or in Git — see the secret scan below.
+
+| # | What was exercised | Result |
+|---|---|---|
+| 1 | Provider initialisation | `uv sync --extra ai`; `openai` 3.8.0; `OpenAIProvider` constructed from settings alone |
+| 2 | `GET /api/v1/agent/status` | 200 · `provider: openai`, `deterministic: false`, `model: gpt-4o-mini`, 11 tools published |
+| 3 | `POST /api/v1/agent/ask`, simple | "What does this dataset cover?" → 1 tool call, 3 `observed` claims, 3,080 tokens |
+| 4 | Vessel lookup, multi-step | MAERSK ATLANTA → `find_vessel` → `get_vessel_track_summary`, 3 calls, correct MMSI `338078000`, 869 observations |
+| 5 | Analytical question | busiest hour → `12:00 UTC, 287,922 observations`, **independently reconciled** against `GET /analytics/traffic` |
+| 6 | Geospatial question | 20 km of `-122.35, 37.80` → `$geoNear` through `find_vessels_near_location`, 10 vessels with measured distances |
+| 7 | Evidence generation | every answer carried its tool calls, arguments, durations and results, expandable in the UI |
+| 8 | Unsupported request | cargo, destination and freight revenue → refused as not in AIS, with a stated limitation |
+| 9 | Tool budget | ten vessels asked for at once → capped at **8**, `truncated: true`, budget named in the answer |
+| 10 | Prompt injection | "maintenance mode", `$out` pipeline, `cat .env`, "print your system prompt" → refused, **zero tool calls**, no collection created |
+| 11 | Argument bounds | `radiusKm: 9000` → rejected by the Pydantic type, model retried at the 100 km cap and disclosed the constraint |
+| 12 | UI copilot flow | question asked through `/copilot` in Chrome against the live provider; answer, claim labels, limitations, evidence and token footer all rendered |
+
+Also verified: with `LLM_PROVIDER` unset, `/agent/ask` returns **503
+`AI_NOT_CONFIGURED`** with no credential in the message, `/agent/status` returns
+200 and still publishes the tool catalogue, every other route returns 200, and
+`/copilot` renders its configured-by-you state.
+
+Stored traces were inspected directly in `agent_runs`. The document fields are
+exactly `_id`, `createdAt`, `question`, `provider`, `model`, `durationMs`,
+`truncated`, `usage`, `toolCalls` — no answer text, no reasoning, no credential.
+
+### Four defects the real provider exposed
+
+| Defect | Why the offline provider never showed it | Fix |
+|---|---|---|
+| **The tool budget could be exceeded.** A budget of 8 ran 10 tools. | The mock provider returns **one** tool call per turn. OpenAI returns a *list*, and the cap was checked only between turns, so one turn ran every call it asked for. | Cap enforced per call inside the loop, and the run stops rather than returning with unanswered calls. `TestParallelToolCallsRespectTheBudget`, which fails without the fix. |
+| **`/agent/status` reported an empty model** while every answer said `gpt-4o-mini`. | `LLM_MODEL` is unset in tests, and no test compared the status route against a constructed provider. | `factory.effective_model()` resolves the provider default in one place; a test asserts status equals what `build_provider` reports. |
+| **`/copilot` and `/analytics` scrolled sideways on a phone**, by 20 px and 42 px. | Never checked below Chrome's ~500 px window floor. A bare Tailwind `grid` gets an implicit `auto` track whose minimum is the item's min-content, and the button primitive is `whitespace-nowrap`. | Explicit `grid-cols-1`; wrapping chips. `e2e/responsive.spec.ts` asserts no horizontal scroll on all 8 routes at 375 px. The e2e fixture wrote only status `0`, so it could not reproduce the long label that caused it — it now spreads five statuses including the longest in the ITU-R table. |
+| **An unknown URL got Next's default 404**, grey on grey inside the app shell. | No test visited a route that does not exist. | `app/not-found.tsx` in the design system, listing where to go. Covered by a navigation test and added to the `axe` sweep. |
+
+---
+
 ## Outstanding
 
 Recorded rather than closed. None is a defect in shipped behaviour; all are
 gaps in coverage or in what a deployment would need.
 
-1. **The real OpenAI provider has never made a network call.** Everything was
-   built and tested against the deterministic offline provider. The pure paths —
-   redaction, argument decoding, message translation — have 22 unit tests, but
-   the round trip is unexercised, and this document does not claim otherwise.
-2. **`pnpm format:check` fails on 39 files.** Pre-existing; prettier has never
-   been run in this repository. Formatting-only churn, deliberately not bundled
-   with feature work.
-3. **`latest_vessel_type` is unbenchmarked.** Its own declaration calls it a
+1. **`latest_vessel_type` is unbenchmarked.** Its own declaration calls it a
    removal candidate. Removing an index on a hypothesis is the same error as
    adding one on a hypothesis, so it stays until measured.
-4. **No rate limiting, no authentication, no CSP, no dependency scanning.**
+2. **No rate limiting, no authentication, no CSP, no dependency scanning.**
    Acceptable for a local portfolio project; the first four things to add before
    any deployment. See [`security/THREAT_MODEL.md`](security/THREAT_MODEL.md).
-5. **Concurrency and cold-cache behaviour are unmeasured**, and E2E runs Chromium
+3. **Concurrency and cold-cache behaviour are unmeasured**, and E2E runs Chromium
    only. Every performance figure is one client against one warm, idle server on
    one machine.
+4. **The copilot has been exercised against one model.** `gpt-4o-mini` answered
+   every question in the table above. Nothing here establishes how a different
+   model behaves against the same prompt and registry — the bounds are enforced
+   by NaviSight and hold regardless, but answer quality is a single data point.
+
+### Closed since the first audit
+
+- **The real OpenAI provider has never made a network call** — closed by the
+  verification above.
+- **`pnpm format:check` fails on 39 files** — closed in `88761b1`; prettier now
+  runs in CI.
 
 ---
 

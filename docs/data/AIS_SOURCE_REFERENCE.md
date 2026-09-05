@@ -78,7 +78,7 @@ thresholds, not as a silent filter:
   one-minute-filtered MarineCadastre product already blanks most of these,
   which is why the source file uses empty strings rather than sentinels.
 
-See [`DATA_QUALITY.md`](./DATA_QUALITY.md) for what was actually measured in
+See [`AIS_PROFILE.md`](./AIS_PROFILE.md) for what was actually measured in
 the development dataset, and
 [`ADR-0009`](../adr/0009-treat-source-timestamps-as-utc.md) for the timezone
 decision.
