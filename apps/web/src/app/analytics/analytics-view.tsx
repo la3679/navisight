@@ -209,7 +209,7 @@ export function AnalyticsView() {
       </Card>
 
       {/* -------------------------------------------------- Traffic pair */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <ChartCard
           title="Position reports over the day"
           description="How many AIS broadcasts were recorded in each bucket."
@@ -286,7 +286,7 @@ export function AnalyticsView() {
       </div>
 
       {/* -------------------------------------------- Composition panels */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <ChartCard
           title="Fleet composition"
           description="Vessel types across every vessel in the archive."

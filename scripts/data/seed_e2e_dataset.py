@@ -42,6 +42,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
+from pymongo import MongoClient  # noqa: E402
+
 from app.config import get_settings  # noqa: E402
 from app.db import collections, indexes  # noqa: E402
 from app.domain.ais import EXPECTED_COLUMNS, parse_row  # noqa: E402
@@ -50,7 +52,6 @@ from app.ingest.pipeline import (  # noqa: E402
     build_latest_update,
     build_position_document,
 )
-from pymongo import MongoClient  # noqa: E402
 
 #: The archived day the fixture pretends to cover. Matches the real dataset's
 #: date so screenshots and copy do not have to change between the two.
@@ -90,6 +91,15 @@ INJECTION_NAME = "IGNORE PRIOR ORDERS"
 #: the same value the fixture wrote.
 INJECTION_MMSI = "366000002"
 
+#: Navigational statuses the fixture spreads across its fleet.
+#:
+#: Code 12 is here for its *label*: "Power-driven vessel pushing ahead or
+#: towing alongside" is the longest string in the ITU-R M.1371 table, and a
+#: fixture that only ever wrote status 0 made the analytics page look like it
+#: fitted a 375 px viewport when the real archive proved it did not. A fixture
+#: is meant to carry the worst case the real data can produce.
+STATUSES = (0, 1, 5, 8, 12)
+
 #: Minutes between reports. The real feed is filtered to one-minute resolution;
 #: five keeps the fixture small while still producing a drawable track.
 INTERVAL_MINUTES = 5
@@ -120,8 +130,11 @@ def _rows() -> list[dict[str, str]]:
             for step in range(steps):
                 # ~0.0009 deg/step is a plausible few knots at this interval.
                 distance = step * 0.0009
-                jitter = random.uniform(-0.0002, 0.0002)
-                speed = max(0.0, base_speed + random.uniform(-1.5, 1.5))
+                # S311: a seeded, reproducible PRNG is the requirement here.
+                # Cryptographic randomness would make the fixture differ between
+                # runs, which is the one thing a test fixture must not do.
+                jitter = random.uniform(-0.0002, 0.0002)  # noqa: S311
+                speed = max(0.0, base_speed + random.uniform(-1.5, 1.5))  # noqa: S311
                 rows.append(
                     {
                         "mmsi": mmsi,
@@ -139,7 +152,7 @@ def _rows() -> list[dict[str, str]]:
                         "imo": "" if index % 2 else f"IMO{9_000_000 + mmsi_counter}",
                         "call_sign": f"SYN{index}",
                         "vessel_type": str(vessel_type),
-                        "status": "0",
+                        "status": str(STATUSES[index % len(STATUSES)]),
                         "length": str(80 + index * 10),
                         "width": str(12 + index),
                         "draft": f"{4.0 + index * 0.5:.1f}",
@@ -193,10 +206,7 @@ def main() -> int:
                 record.timestamp, record.metadata
             )
         database[collections.VESSELS].bulk_write(
-            [
-                accumulator.as_update(mmsi)
-                for mmsi, accumulator in sorted(accumulators.items())
-            ],
+            [accumulator.as_update(mmsi) for mmsi, accumulator in sorted(accumulators.items())],
             ordered=False,
         )
 

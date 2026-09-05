@@ -485,12 +485,18 @@ export function CopilotView() {
           <CardBody className="space-y-4">
             <ul className="flex flex-wrap gap-2">
               {EXAMPLE_QUESTIONS.map((example) => (
-                <li key={example}>
+                <li key={example} className="max-w-full">
                   <Button
                     type="button"
                     variant="secondary"
                     size="sm"
                     onClick={() => ask.mutate(example)}
+                    // These chips carry whole sentences, not labels. The Button
+                    // primitive is nowrap by default, which is right for a button
+                    // and wrong here: at 375 px the longest one pushed the page
+                    // 20 px wider than the viewport and the whole document
+                    // scrolled sideways.
+                    className="h-auto max-w-full py-1.5 text-left whitespace-normal"
                   >
                     {example}
                   </Button>

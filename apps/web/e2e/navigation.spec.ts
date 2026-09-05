@@ -98,3 +98,40 @@ test("the dataset badge states that the data is historical, on every page", asyn
     await expect(page.getByText(/historical/i).first()).toBeVisible();
   }
 });
+
+test("an unknown address gets NaviSight's own not-found page, not Next's", async ({ page }) => {
+  // Next's default 404 rendered inside the app shell as grey-on-grey: legible
+  // enough to notice, not enough to read. The page that catches someone who is
+  // already lost has to be the one page that is easy to read, and it has to
+  // offer somewhere to go.
+  const errors = collectErrors(page);
+
+  const response = await page.goto("/no-such-route");
+  expect(response?.status()).toBe(404);
+
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    /this page does not exist/i,
+  );
+  await expect(page.getByText(/this page could not be found/i)).toHaveCount(0);
+
+  // The point of the page: a way out.
+  const main = page.getByRole("main");
+  for (const destination of [
+    { label: /^Overview/, href: "/" },
+    { label: /^Operations map/, href: "/operations" },
+    { label: /^Vessels/, href: "/vessels" },
+    { label: /^Copilot/, href: "/copilot" },
+  ]) {
+    const link = main.getByRole("link", { name: destination.label });
+    await expect(link).toBeVisible();
+    await expect(link).toHaveAttribute("href", destination.href);
+  }
+
+  // Chromium logs the 404 document itself as a console error. That one is the
+  // correct behaviour under test; anything else on this page is not.
+  const unexpected = errors.filter(
+    (entry) =>
+      !/Failed to load resource: the server responded with a status of 404/i.test(entry),
+  );
+  expect(unexpected, "console output on the not-found page").toEqual([]);
+});

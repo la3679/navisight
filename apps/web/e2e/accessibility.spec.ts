@@ -24,7 +24,19 @@ import { expect, test } from "@playwright/test";
  * until someone explains otherwise in writing — there is no blanket ignore.
  */
 
-const ROUTES = ["/", "/operations", "/vessels", "/analytics", "/ports", "/copilot", "/data"];
+const ROUTES = [
+  "/",
+  "/operations",
+  "/vessels",
+  "/analytics",
+  "/ports",
+  "/copilot",
+  "/data",
+  // The not-found page is a real screen with real readers. Next's default
+  // one rendered grey on grey inside the shell, which is exactly the class of
+  // defect this scan exists to catch.
+  "/no-such-route",
+];
 
 /**
  * WCAG 2.1 A and AA. Best-practice rules are excluded from the failing set:
