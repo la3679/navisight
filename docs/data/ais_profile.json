@@ -1,0 +1,538 @@
+{
+  "source": {
+    "path": "C:\\Users\\lovea\\Documents\\VS Code Projects\\ais-2025-01-08.csv",
+    "bytes": 604984395,
+    "header": [
+      "mmsi",
+      "base_date_time",
+      "longitude",
+      "latitude",
+      "sog",
+      "cog",
+      "heading",
+      "vessel_name",
+      "imo",
+      "call_sign",
+      "vessel_type",
+      "status",
+      "length",
+      "width",
+      "draft",
+      "cargo",
+      "transceiver"
+    ],
+    "header_matches_expected_schema": true
+  },
+  "rows": {
+    "read": 5929631,
+    "valid": 5929631,
+    "rejected": 0,
+    "rejected_pct": 0.0,
+    "reject_reasons": {}
+  },
+  "identity": {
+    "unique_mmsi": 16294,
+    "unique_vessel_names": 14219,
+    "unique_imo": 5072,
+    "unique_call_signs": 12894,
+    "mmsi_length_distribution": {
+      "9": 16294
+    },
+    "mmsi_leading_digit_distribution": {
+      "1": 4,
+      "2": 536,
+      "3": 14750,
+      "4": 143,
+      "5": 538,
+      "6": 269,
+      "7": 8,
+      "8": 5,
+      "9": 41
+    },
+    "vessels_with_name": 16188,
+    "vessels_with_imo": 5103
+  },
+  "uniqueness": {
+    "duplicate_mmsi_timestamp_pairs": 1430,
+    "exact_duplicate_rows": 1112,
+    "conflicting_mmsi_timestamp_rows": 318,
+    "mmsi_timestamp_is_unique": false,
+    "mmsi_timestamp_position_transceiver_is_unique": false
+  },
+  "time": {
+    "min": "2025-01-08T00:00:00+00:00",
+    "max": "2025-01-08T23:59:59+00:00",
+    "distinct_timestamps": 86142,
+    "rows_by_hour_utc": {
+      "0": 249299,
+      "1": 243351,
+      "10": 263862,
+      "11": 277224,
+      "12": 287960,
+      "13": 272584,
+      "14": 239916,
+      "15": 239745,
+      "16": 243654,
+      "17": 245539,
+      "18": 244853,
+      "19": 248448,
+      "2": 225750,
+      "20": 171450,
+      "21": 245148,
+      "22": 240065,
+      "23": 268115,
+      "3": 215380,
+      "4": 226068,
+      "5": 221678,
+      "6": 255983,
+      "7": 271655,
+      "8": 269778,
+      "9": 262126
+    }
+  },
+  "space": {
+    "longitude_min": -175.14678,
+    "longitude_max": 146.49848,
+    "latitude_min": 2.30697,
+    "latitude_max": 85.28678,
+    "invalid_longitude": 0,
+    "invalid_latitude": 0,
+    "null_island_rows": 0
+  },
+  "columns": {
+    "mmsi": {
+      "present": 5929631,
+      "empty": 0,
+      "missing_pct": 0.0,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "base_date_time": {
+      "present": 5929631,
+      "empty": 0,
+      "missing_pct": 0.0,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "longitude": {
+      "present": 5929631,
+      "empty": 0,
+      "missing_pct": 0.0,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "latitude": {
+      "present": 5929631,
+      "empty": 0,
+      "missing_pct": 0.0,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "sog": {
+      "present": 5917091,
+      "empty": 12540,
+      "missing_pct": 0.2115,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "cog": {
+      "present": 4859871,
+      "empty": 1069760,
+      "missing_pct": 18.0409,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "heading": {
+      "present": 2929535,
+      "empty": 3000096,
+      "missing_pct": 50.595,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "vessel_name": {
+      "present": 5912519,
+      "empty": 17112,
+      "missing_pct": 0.2886,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "imo": {
+      "present": 2365972,
+      "empty": 3563659,
+      "missing_pct": 60.0992,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "call_sign": {
+      "present": 5205050,
+      "empty": 724581,
+      "missing_pct": 12.2197,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "vessel_type": {
+      "present": 5887055,
+      "empty": 42576,
+      "missing_pct": 0.718,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "status": {
+      "present": 3829905,
+      "empty": 2099726,
+      "missing_pct": 35.4107,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "length": {
+      "present": 5798546,
+      "empty": 131085,
+      "missing_pct": 2.2107,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "width": {
+      "present": 5721083,
+      "empty": 208548,
+      "missing_pct": 3.517,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "draft": {
+      "present": 3303174,
+      "empty": 2626457,
+      "missing_pct": 44.2938,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "cargo": {
+      "present": 3967108,
+      "empty": 1962523,
+      "missing_pct": 33.0969,
+      "malformed": 0,
+      "out_of_domain": 0
+    },
+    "transceiver": {
+      "present": 5929631,
+      "empty": 0,
+      "missing_pct": 0.0,
+      "malformed": 0,
+      "out_of_domain": 0
+    }
+  },
+  "distributions": {
+    "vessel_type": {
+      "37": 1304690,
+      "31": 991162,
+      "52": 975914,
+      "30": 428886,
+      "36": 395944,
+      "70": 378675,
+      "60": 350107,
+      "80": 182040,
+      "57": 113829,
+      "90": 100221,
+      "33": 65245,
+      "51": 63259,
+      "50": 48458,
+      "71": 47249,
+      "69": 47128,
+      "79": 45042,
+      "32": 43829,
+      "99": 40463,
+      "55": 32335,
+      "40": 28295,
+      "89": 25638,
+      "35": 21005,
+      "74": 20825,
+      "82": 11645,
+      "54": 10625,
+      "39": 9111,
+      "53": 7733,
+      "38": 6210,
+      "65": 6118,
+      "72": 5808,
+      "34": 5342,
+      "67": 5190,
+      "56": 5123,
+      "84": 4968,
+      "73": 4576,
+      "81": 4448,
+      "49": 4248,
+      "95": 4205,
+      "20": 3765,
+      "75": 2860
+    },
+    "vessel_type_labels": {
+      "37": "Pleasure craft",
+      "31": "Towing",
+      "52": "Tug",
+      "30": "Fishing",
+      "36": "Sailing",
+      "70": "Cargo",
+      "60": "Passenger",
+      "80": "Tanker",
+      "57": "Local vessel",
+      "90": "Other",
+      "33": "Dredging or underwater operations",
+      "51": "Search and rescue",
+      "50": "Pilot vessel",
+      "71": "Cargo (hazardous category A)",
+      "69": "Passenger",
+      "79": "Cargo",
+      "32": "Towing (large)",
+      "99": "Other",
+      "55": "Law enforcement",
+      "40": "High-speed craft",
+      "89": "Tanker",
+      "35": "Military operations",
+      "74": "Cargo (hazardous category D)",
+      "82": "Tanker (hazardous category B)",
+      "54": "Anti-pollution equipment",
+      "39": "Unknown (code 39)",
+      "53": "Port tender",
+      "38": "Unknown (code 38)",
+      "65": "Passenger",
+      "72": "Cargo (hazardous category B)",
+      "34": "Diving operations",
+      "67": "Passenger",
+      "56": "Local vessel",
+      "84": "Tanker (hazardous category D)",
+      "73": "Cargo (hazardous category C)",
+      "81": "Tanker (hazardous category A)",
+      "49": "High-speed craft",
+      "95": "Other",
+      "20": "Wing in ground",
+      "75": "Cargo"
+    },
+    "status": {
+      "0": 2130681,
+      "1": 151204,
+      "10": 2780,
+      "11": 46069,
+      "12": 629147,
+      "13": 6366,
+      "14": 69,
+      "2": 4868,
+      "3": 68488,
+      "4": 4008,
+      "5": 708647,
+      "6": 3687,
+      "7": 33752,
+      "8": 31589,
+      "9": 8550
+    },
+    "transceiver": {
+      "A": 4141255,
+      "B": 1788376
+    },
+    "sog_knots_histogram": {
+      "0": 3828946,
+      "0-0.5": 679484,
+      "0.5-1": 102424,
+      "1-3": 191727,
+      "10-15": 259848,
+      "15-20": 71622,
+      "20-30": 27318,
+      "3-5": 213366,
+      "30+": 5477,
+      "5-10": 536879
+    },
+    "sog_min": 0.0,
+    "sog_max": 87.2
+  },
+  "per_vessel": {
+    "top_by_observations": [
+      {
+        "mmsi": "338199855",
+        "name": "AHUA POINT",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1305
+      },
+      {
+        "mmsi": "369081000",
+        "name": "GULF CAJUN",
+        "vessel_type": 32,
+        "vessel_type_label": "Towing (large)",
+        "observations": 1275
+      },
+      {
+        "mmsi": "366921510",
+        "name": "SUN SPIRIT",
+        "vessel_type": 31,
+        "vessel_type_label": "Towing",
+        "observations": 1255
+      },
+      {
+        "mmsi": "367712660",
+        "name": "WSF CHIMACUM",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1254
+      },
+      {
+        "mmsi": "366773070",
+        "name": "WSF CATHLAMET",
+        "vessel_type": 65,
+        "vessel_type_label": "Passenger",
+        "observations": 1251
+      },
+      {
+        "mmsi": "366773040",
+        "name": "WSF ISSAQUAH",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1250
+      },
+      {
+        "mmsi": "367531220",
+        "name": "WATCHMAN",
+        "vessel_type": 30,
+        "vessel_type_label": "Fishing",
+        "observations": 1250
+      },
+      {
+        "mmsi": "368257130",
+        "name": "TRIUMPH VII",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1241
+      },
+      {
+        "mmsi": "367529030",
+        "name": "CONNOR FOSS",
+        "vessel_type": 57,
+        "vessel_type_label": "Local vessel",
+        "observations": 1239
+      },
+      {
+        "mmsi": "367513230",
+        "name": "WILLAMETTE",
+        "vessel_type": 52,
+        "vessel_type_label": "Tug",
+        "observations": 1237
+      },
+      {
+        "mmsi": "368333870",
+        "name": "ARTEMIS",
+        "vessel_type": 52,
+        "vessel_type_label": "Tug",
+        "observations": 1233
+      },
+      {
+        "mmsi": "367380280",
+        "name": "WESTERN STAR",
+        "vessel_type": 31,
+        "vessel_type_label": "Towing",
+        "observations": 1232
+      },
+      {
+        "mmsi": "369970411",
+        "name": "YTB-835 SKENANDOA",
+        "vessel_type": 52,
+        "vessel_type_label": "Tug",
+        "observations": 1230
+      },
+      {
+        "mmsi": "366772780",
+        "name": "WSF WALLA WALLA",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1229
+      },
+      {
+        "mmsi": "366772760",
+        "name": "WSF TACOMA",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1228
+      },
+      {
+        "mmsi": "367653630",
+        "name": "OSCAR B",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1228
+      },
+      {
+        "mmsi": "367331730",
+        "name": "COLUMBIA",
+        "vessel_type": 50,
+        "vessel_type_label": "Pilot vessel",
+        "observations": 1227
+      },
+      {
+        "mmsi": "368138010",
+        "name": "NEW YORK",
+        "vessel_type": 50,
+        "vessel_type_label": "Pilot vessel",
+        "observations": 1226
+      },
+      {
+        "mmsi": "367327250",
+        "name": "ENDEAVOR",
+        "vessel_type": 30,
+        "vessel_type_label": "Fishing",
+        "observations": 1223
+      },
+      {
+        "mmsi": "367170860",
+        "name": "WRANGLER",
+        "vessel_type": 30,
+        "vessel_type_label": "Fishing",
+        "observations": 1222
+      },
+      {
+        "mmsi": "366435740",
+        "name": "GEORGE ALLEN",
+        "vessel_type": 30,
+        "vessel_type_label": "Fishing",
+        "observations": 1221
+      },
+      {
+        "mmsi": "367649320",
+        "name": "WSF SAMISH",
+        "vessel_type": 60,
+        "vessel_type_label": "Passenger",
+        "observations": 1220
+      },
+      {
+        "mmsi": "367155110",
+        "name": "CAPTAIN RALEIGH",
+        "vessel_type": 30,
+        "vessel_type_label": "Fishing",
+        "observations": 1219
+      },
+      {
+        "mmsi": "366976920",
+        "name": "WEDELL FOSS",
+        "vessel_type": 52,
+        "vessel_type_label": "Tug",
+        "observations": 1219
+      },
+      {
+        "mmsi": "367047270",
+        "name": "LIBERTY",
+        "vessel_type": 31,
+        "vessel_type_label": "Towing",
+        "observations": 1217
+      }
+    ],
+    "observations_percentiles": {
+      "min": 1,
+      "p50": 325,
+      "p90": 844,
+      "p99": 1102,
+      "max": 1305
+    },
+    "vessels_with_metadata_changes": 371,
+    "total_metadata_changes": 8210,
+    "max_metadata_changes_for_one_vessel": 432
+  },
+  "run": {
+    "duration_seconds": 479.43,
+    "rows_per_second": 12368.2
+  },
+  "generated_at": "2026-09-04T00:34:48.682037+00:00"
+}

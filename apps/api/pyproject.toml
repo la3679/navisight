@@ -1,0 +1,136 @@
+[project]
+name = "navisight-api"
+version = "0.1.0"
+description = "NaviSight — maritime vessel and port intelligence API and data pipeline"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+# Dependency discipline (SOUL.md §15): each entry states why it is here.
+dependencies = [
+    "fastapi>=0.115",          # API framework; Pydantic-native request/response models
+    "uvicorn[standard]>=0.32",  # ASGI server
+    "pydantic>=2.9",            # typed boundaries (SOUL.md §5)
+    "pydantic-settings>=2.6",   # env-driven config with validation
+    "pymongo>=4.13",            # official driver; 4.13+ ships GA AsyncMongoClient
+    "typer>=0.15",              # the multi-subcommand data CLI needs real arg parsing
+]
+
+[project.optional-dependencies]
+# AI copilot. The application starts and serves every non-AI route without
+# these installed; AI surfaces then report "provider not configured".
+# One dependency: the provider SDK. The agent loop, the tool registry, the
+# bounds and the evidence record are ~400 lines of application code here — an
+# orchestration framework would add a graph abstraction over a while-loop and
+# hide the guarantees that are the entire point of it (SOUL.md §15).
+ai = [
+    "openai>=1.60",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "httpx>=0.28",             # FastAPI TestClient transport
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[project.scripts]
+navisight-data = "app.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+# ---------------------------------------------------------------------------
+# Ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["."]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # import sorting
+    "N",         # pep8-naming
+    "UP",        # pyupgrade
+    "B",         # bugbear
+    "C4",        # comprehensions
+    "SIM",       # simplify
+    "TID",       # tidy imports
+    "RUF",       # ruff-specific
+    "ASYNC",     # async correctness
+    "S",         # bandit security rules
+    "DTZ",       # naive-datetime misuse — load-bearing for a UTC-only system
+    "T20",       # no stray print() outside the CLI
+    "PTH",       # pathlib over os.path
+    "RET", "ARG", "PIE", "PERF",
+]
+ignore = [
+    "S101",   # assert: pytest relies on it
+    "B008",   # FastAPI Depends() in defaults is the documented idiom
+    "PERF203", # try/except in loop is how per-row error accounting works
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The CLI is a console program; printing is the point.
+"app/cli.py" = ["T20"]
+"app/cli/*" = ["T20"]
+"scripts/*" = ["T20"]
+"tests/*" = ["S105", "S106", "ARG001", "ARG002"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+# ---------------------------------------------------------------------------
+# mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+warn_return_any = true
+disallow_untyped_defs = true
+no_implicit_reexport = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+# The optional AI extra may not be installed in every environment; the code
+# guards its import at runtime and falls back to "provider not configured".
+#
+# This list names only packages this project actually declares. It previously
+# carried `langgraph`, `langchain_core` and `anthropic` from a plan that was
+# not adopted (ADR-0013) — a config that advertises dependencies the lockfile
+# has never contained is a claim, and it was not a true one.
+module = ["openai.*"]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-q --strict-markers --strict-config"
+markers = [
+    "integration: requires a running MongoDB (uses MONGODB_TEST_DATABASE)",
+    "slow: excluded from the default fast feedback loop",
+]
+# Our own deprecations are errors — that is how the deprecated ORJSONResponse
+# usage was caught. Third-party internals we cannot fix are ignored explicitly
+# rather than by relaxing the rule globally.
+filterwarnings = [
+    "error::DeprecationWarning",
+    # starlette.testclient imports a deprecated anyio alias at module scope.
+    "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning",
+    # starlette's own httpx-vs-httpx2 transition notice.
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:Warning",
+]

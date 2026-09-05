@@ -1,0 +1,43 @@
+# NaviSight local infrastructure.
+#
+# This file exists to give you a MongoDB instance, nothing more. The API and
+# web app run on the host during development because the edit/reload loop is
+# meaningfully faster that way.
+#
+#   docker compose up -d mongodb
+#   docker compose ps
+#   docker compose down          # keeps data
+#   docker compose down -v       # deletes the data volume
+#
+# If you already run a native mongod on 27017, set MONGO_HOST_PORT=27018 in
+# your .env and point MONGODB_URI at it.
+
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: navisight-mongodb
+    restart: unless-stopped
+    # Bound to loopback only. This database must never be reachable from the
+    # network; the API is the sole gateway to it.
+    ports:
+      - "127.0.0.1:${MONGO_HOST_PORT:-27017}:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE:-navisight}
+    volumes:
+      - mongo-data:/data/db
+      - ./infra/docker/mongo-init:/docker-entrypoint-initdb.d:ro
+    command:
+      # The AIS import is write-heavy and benefits from a larger cache than the
+      # default on machines with plenty of RAM. Tune to taste.
+      - "--wiredTigerCacheSizeGB"
+      - "${MONGO_CACHE_GB:-2}"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  mongo-data:
+    name: navisight-mongo-data

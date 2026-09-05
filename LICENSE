@@ -19,10 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This license covers the NaviSight application source code only.
-It does not relicense third-party data or assets. See:
-  - data/README.md            (AIS source data provenance and terms)
-  - docs/THIRD_PARTY_ASSETS.md (3D models, fonts, and other assets)

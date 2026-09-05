@@ -1,0 +1,121 @@
+{
+  "measuredAt": "2026-09-04T19:50:31.009853+00:00",
+  "database": "navisight",
+  "positionDocuments": 5928519,
+  "repeats": {
+    "default": 5,
+    "scan": 3
+  },
+  "results": [
+    {
+      "name": "One vessel's track",
+      "query": "vessel_positions.find({mmsi}).sort(timestamp desc).limit(5000)",
+      "serves": "GET /api/v1/vessels/{mmsi}/positions and /track",
+      "index": "position_mmsi_timestamp",
+      "indexedMs": 3.01,
+      "scanMs": 8263.79,
+      "explainIndexed": {
+        "nReturned": 335,
+        "totalKeysExamined": 335,
+        "totalDocsExamined": 335,
+        "executionTimeMillis": 1
+      }
+    },
+    {
+      "name": "One-hour window across all vessels",
+      "query": "vessel_positions.count({timestamp: {$gte, $lte}})",
+      "serves": "sub-day /api/v1/analytics/* (the rollup covers whole-archive)",
+      "index": "position_timestamp",
+      "indexedMs": 124.37,
+      "scanMs": 4033.32,
+      "explainIndexed": {
+        "nReturned": 287922,
+        "totalKeysExamined": 287922,
+        "totalDocsExamined": 287922,
+        "executionTimeMillis": 1103
+      }
+    },
+    {
+      "name": "Map viewport",
+      "query": "vessel_latest.find({location: {$geoWithin: {$box}}}).limit(5000)",
+      "serves": "GET /api/v1/map/vessels \u2014 runs on every map pan",
+      "index": "latest_location_2dsphere",
+      "indexedMs": 55.06,
+      "scanMs": 42.64,
+      "explainIndexed": {
+        "nReturned": 338,
+        "totalKeysExamined": 0,
+        "totalDocsExamined": 16294,
+        "executionTimeMillis": 47
+      }
+    },
+    {
+      "name": "Map viewport as a GeoJSON polygon",
+      "query": "vessel_latest.find({location: {$geoWithin: {$geometry: Polygon}}})",
+      "serves": "nothing today \u2014 the indexable alternative to $box, measured",
+      "index": "latest_location_2dsphere",
+      "indexedMs": 3.95,
+      "scanMs": null,
+      "explainIndexed": {
+        "nReturned": 338,
+        "totalKeysExamined": 347,
+        "totalDocsExamined": 341,
+        "executionTimeMillis": 4
+      },
+      "matchedSameDocuments": true
+    },
+    {
+      "name": "Distance-sorted proximity ($geoNear)",
+      "query": "vessel_latest.aggregate([$geoNear {50 km}, $limit 200])",
+      "serves": "GET /api/v1/geo/nearby and the agent's find_vessels_near_location",
+      "index": "latest_location_2dsphere",
+      "indexedMs": 3.02,
+      "scanMs": null,
+      "explainIndexed": {
+        "note": "$geoNear cannot be planned without a geo index"
+      }
+    },
+    {
+      "name": "Same viewport, over full position history",
+      "query": "vessel_positions.find({location: {$geoWithin: {$box}}}).limit(5000)",
+      "serves": "nothing \u2014 this is the shape ADR-0003 exists to avoid",
+      "index": "position_location_2dsphere",
+      "indexedMs": 537.6,
+      "scanMs": null,
+      "explainIndexed": {
+        "nReturned": 5000,
+        "totalKeysExamined": 0,
+        "totalDocsExamined": 135426,
+        "executionTimeMillis": 575
+      }
+    },
+    {
+      "name": "Vessel name prefix search",
+      "query": "vessels.find({nameNormalized: /^A/}).limit(50)",
+      "serves": "GET /api/v1/vessels?q= and the agent's find_vessel tool",
+      "index": "vessel_name_normalized",
+      "indexedMs": 0.79,
+      "scanMs": 0.99,
+      "explainIndexed": {
+        "nReturned": 50,
+        "totalKeysExamined": 50,
+        "totalDocsExamined": 50,
+        "executionTimeMillis": 0
+      }
+    },
+    {
+      "name": "Archive coverage bounds",
+      "query": "two find_one(sort=timestamp) vs one $group $min/$max",
+      "serves": "GET /api/v1/dataset/status \u2014 the header badge, on every page",
+      "index": "position_timestamp",
+      "indexedMs": 0.77,
+      "scanMs": 4658.56,
+      "explainIndexed": {
+        "nReturned": 1,
+        "totalKeysExamined": 1,
+        "totalDocsExamined": 1,
+        "executionTimeMillis": 0
+      }
+    }
+  ]
+}

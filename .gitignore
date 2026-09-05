@@ -26,6 +26,8 @@ data/raw/
 data/processed/
 data/local/
 data/reference/*.csv
+data/reference/*.json
+data/reference/*.geojson
 !data/reference/.gitkeep
 *.csv.gz
 *.csv.zip
@@ -102,6 +104,9 @@ benchmarks-out/
 .agent/
 graphify-out/
 .graphify/
+.graphify_*.json
+.graphify_cache/
+GRAPH_TREE.html
 .claude/settings.local.json
 
 # --- Logs --------------------------------------------------------------------
