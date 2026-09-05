@@ -20,8 +20,9 @@ not finished.
 | [0010](0010-serve-the-maplibre-worker-from-our-own-origin.md) | Serve MapLibre's Web Worker from our own `public/` directory | Accepted |
 | [0011](0011-precompute-whole-archive-analytics.md) | Precompute whole-archive analytics instead of indexing for them | Accepted |
 | [0012](0012-give-the-copilot-tools-not-a-query-language.md) | Give the copilot tools, not a query language | Accepted |
+| [0013](0013-hand-written-agent-loop-instead-of-an-orchestration-framework.md) | A hand-written agent loop instead of an orchestration framework | Accepted |
 
-Number 0004 and 0013+ are reserved for further frontend, 3D, and AI decisions
+Number 0004 and 0014+ are reserved for further frontend, 3D, and AI decisions
 recorded as those subsystems land.
 
 ## Evidence

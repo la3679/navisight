@@ -103,9 +103,14 @@ no_implicit_reexport = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-# Optional AI extras are not installed in the base environment or in the
-# lint job; the code guards their import at runtime.
-module = ["langgraph.*", "langchain_core.*", "anthropic.*"]
+# The optional AI extra may not be installed in every environment; the code
+# guards its import at runtime and falls back to "provider not configured".
+#
+# This list names only packages this project actually declares. It previously
+# carried `langgraph`, `langchain_core` and `anthropic` from a plan that was
+# not adopted (ADR-0013) — a config that advertises dependencies the lockfile
+# has never contained is a claim, and it was not a true one.
+module = ["openai.*"]
 ignore_missing_imports = true
 
 # ---------------------------------------------------------------------------

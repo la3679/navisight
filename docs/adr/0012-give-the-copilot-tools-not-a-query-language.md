@@ -114,7 +114,7 @@ tool that counted.
   `test_no_tool_accepts_a_query_pipeline_or_field_path`.
 - Every number in an answer traces to a named call with visible arguments,
   which is what `/copilot`'s evidence list renders.
-- The agent's behaviour is testable without a model: 34 integration tests run
+- The agent's behaviour is testable without a model: 42 integration tests run
   against the deterministic provider and assert the bounds, the refusals, the
   claim labelling, and the trace.
 - Prompt injection through dataset text is contained by shape rather than by
