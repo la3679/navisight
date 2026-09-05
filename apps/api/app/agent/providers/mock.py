@@ -78,7 +78,11 @@ class MockProvider:
 
     name = NAME
 
-    def __init__(self, model: str = "deterministic-stub") -> None:
+    #: Named rather than inlined so the status route can report the model that
+    #: will answer without constructing a provider.
+    DEFAULT_MODEL = "deterministic-stub"
+
+    def __init__(self, model: str = DEFAULT_MODEL) -> None:
         self.model = model
 
     async def complete(self, messages: list[Message], *, tools: list[dict[str, Any]]) -> Completion:

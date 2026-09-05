@@ -597,3 +597,128 @@ class TestAnswerParsing:
             async_database, provider, "anything", max_tool_calls=4, timeout_seconds=60
         )
         assert result.claims == [{"text": "t", "kind": agent_runner.WEAKEST_KIND}]
+
+
+# ------------------------------------------------------- parallel tool calls
+class ParallelProvider:
+    """Emits many tool calls in one completion, the way a real model does.
+
+    ``LoopingProvider`` above returns exactly one call per turn, which is why
+    the budget looked enforced for as long as nothing was tested against a real
+    provider. OpenAI's tool-calling API returns a *list*, and asked about ten
+    vessels it returned ten calls in a single completion — every one of which
+    ran, because the cap was only checked between turns.
+    """
+
+    name = "parallel"
+    model = "parallel"
+
+    def __init__(self, calls_per_turn: int) -> None:
+        self.calls_per_turn = calls_per_turn
+        self.turns = 0
+
+    async def complete(self, messages: list[Message], *, tools: list[dict[str, Any]]) -> Completion:
+        self.turns += 1
+        return Completion(
+            content="",
+            tool_calls=tuple(
+                ToolCall(
+                    id=f"turn-{self.turns}-call-{index}",
+                    name="get_vessel_type_distribution",
+                    arguments={},
+                )
+                for index in range(self.calls_per_turn)
+            ),
+        )
+
+
+class TestParallelToolCallsRespectTheBudget:
+    """The cap is per tool call, whatever shape the provider returns them in."""
+
+    async def test_one_oversized_turn_cannot_exceed_the_budget(
+        self, async_database: Any, seeded: Database[dict[str, Any]]
+    ) -> None:
+        provider = ParallelProvider(calls_per_turn=10)
+        result = await agent_runner.run(
+            async_database, provider, "ten at once", max_tool_calls=3, timeout_seconds=60
+        )
+        assert len(result.evidence) == 3
+        assert result.truncated is True
+        assert "budget of 3" in result.answer
+
+    async def test_the_run_stops_rather_than_asking_the_provider_again(
+        self, async_database: Any, seeded: Database[dict[str, Any]]
+    ) -> None:
+        """Unanswered calls would be left dangling; a second request would fail.
+
+        A provider that requires every ``tool_calls`` entry to have a matching
+        result would reject the next request outright, turning a budget stop
+        into a provider error. The loop must not go back for another turn.
+        """
+        provider = ParallelProvider(calls_per_turn=5)
+        result = await agent_runner.run(
+            async_database, provider, "five at once", max_tool_calls=2, timeout_seconds=60
+        )
+        assert provider.turns == 1
+        assert len(result.evidence) == 2
+
+    async def test_a_turn_inside_the_budget_still_runs_every_call(
+        self, async_database: Any, seeded: Database[dict[str, Any]]
+    ) -> None:
+        """The cap truncates; it does not silently drop calls that fit."""
+        provider = ParallelProvider(calls_per_turn=2)
+        result = await agent_runner.run(
+            async_database, provider, "two at once", max_tool_calls=4, timeout_seconds=60
+        )
+        assert len(result.evidence) == 4
+        assert provider.turns == 2
+
+
+# ------------------------------------------------------------- effective model
+class TestEffectiveModel:
+    """What ``/agent/status`` says will answer must be what answers."""
+
+    def test_status_names_the_model_when_llm_model_is_unset(
+        self, ai_client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(get_settings(), "llm_model", "")
+        body = ai_client.get("/api/v1/agent/status").json()
+        assert body["model"] == MockProvider.DEFAULT_MODEL
+
+    def test_an_explicit_model_setting_wins(
+        self, ai_client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(get_settings(), "llm_model", "some-other-model")
+        body = ai_client.get("/api/v1/agent/status").json()
+        assert body["model"] == "some-other-model"
+
+    def test_the_openai_default_is_reported_without_a_key_or_a_client(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Resolution must not construct a provider — that would need the SDK."""
+        from app.agent import factory as agent_factory
+        from app.agent.providers.openai_provider import DEFAULT_MODEL
+
+        settings = get_settings()
+        monkeypatch.setattr(settings, "llm_provider", "openai")
+        monkeypatch.setattr(settings, "llm_model", "")
+        assert agent_factory.effective_model(settings) == DEFAULT_MODEL
+
+    def test_the_status_model_is_what_a_built_provider_reports(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from app.agent import factory as agent_factory
+
+        settings = get_settings()
+        monkeypatch.setattr(settings, "llm_provider", "mock")
+        monkeypatch.setattr(settings, "llm_model", "")
+        described = agent_factory.describe(settings)
+        assert described["model"] == agent_factory.build_provider(settings).model
+
+    def test_no_provider_configured_reports_no_model(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        from app.agent import factory as agent_factory
+
+        settings = get_settings()
+        monkeypatch.setattr(settings, "llm_provider", "")
+        monkeypatch.setattr(settings, "llm_model", "")
+        assert agent_factory.effective_model(settings) == ""

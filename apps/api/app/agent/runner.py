@@ -177,6 +177,15 @@ async def run(
         )
 
         for call in completion.tool_calls:
+            # The budget is per tool call, not per turn. A provider may return
+            # several calls in one completion — the real OpenAI one routinely
+            # returns ten — and checking only at the top of the outer loop would
+            # let a single turn run as many tools as the model felt like asking
+            # for. Checked here, the cap holds whatever shape the model uses.
+            if len(evidence) >= max_tool_calls or time.perf_counter() > deadline:
+                truncated = True
+                break
+
             call_started = time.perf_counter()
             try:
                 tool_result = await tool_registry.execute(database, call.name, call.arguments)
@@ -213,6 +222,13 @@ async def run(
                     "duration_ms": invocation.duration_ms,
                 },
             )
+
+        if truncated:
+            # Stop here rather than returning to the top of the loop. Some of
+            # this turn's tool calls were left unanswered, and a provider that
+            # requires every call to have a matching result would reject the
+            # next request — the budget must not turn into a provider error.
+            break
 
     if truncated and not answer:
         answer = (

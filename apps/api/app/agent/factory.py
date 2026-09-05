@@ -12,6 +12,26 @@ from app.agent.providers.mock import MockProvider
 from app.config import Settings
 
 
+def effective_model(settings: Settings) -> str:
+    """The model that will actually answer, including a provider's default.
+
+    ``LLM_MODEL`` is optional and each provider falls back to its own default,
+    so the setting alone does not say what will answer. Resolving it in one
+    place is what keeps ``/agent/status`` and the answer footer from disagreeing
+    — the status route said the model was empty while every answer named
+    ``gpt-4o-mini``, and the user was left to notice.
+    """
+    if settings.llm_model:
+        return settings.llm_model
+    if settings.llm_provider == "openai":
+        from app.agent.providers.openai_provider import DEFAULT_MODEL
+
+        return DEFAULT_MODEL
+    if settings.llm_provider == "mock":
+        return MockProvider.DEFAULT_MODEL
+    return ""
+
+
 def build_provider(settings: Settings) -> LLMProvider:
     """Construct the configured provider.
 
@@ -19,14 +39,14 @@ def build_provider(settings: Settings) -> LLMProvider:
     caller can turn it into the not-configured response rather than a 500.
     """
     if settings.llm_provider == "mock":
-        return MockProvider(model=settings.llm_model or "deterministic-stub")
+        return MockProvider(model=effective_model(settings))
 
     if settings.llm_provider == "openai":
         from app.agent.providers.openai_provider import OpenAIProvider
 
         return OpenAIProvider(
             api_key=settings.openai_api_key,
-            model=settings.llm_model,
+            model=effective_model(settings),
             timeout_seconds=settings.agent_timeout_seconds,
         )
 
@@ -46,6 +66,6 @@ def describe(settings: Settings) -> dict[str, str | bool]:
     return {
         "configured": settings.ai_enabled,
         "provider": settings.llm_provider,
-        "model": settings.llm_model,
+        "model": effective_model(settings),
         "deterministic": settings.llm_provider == "mock",
     }
