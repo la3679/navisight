@@ -107,6 +107,15 @@ jobs:
       - name: Types
         run: uv run mypy .
 
+      - name: Lint the repository scripts
+        # `scripts/` holds the benchmark harness and the e2e fixture seeder.
+        # They live outside `apps/api`, so `ruff check .` above never saw them
+        # and neither did any other gate. The repo-root `ruff.toml` extends this
+        # project's configuration so both are held to the same rules.
+        run: |
+          uv run ruff check ../../scripts
+          uv run ruff format --check ../../scripts
+
       - name: Tests
         env:
           MONGODB_URI: mongodb://localhost:27017

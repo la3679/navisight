@@ -1,0 +1,21 @@
+# Ruff for the Python that lives outside `apps/api`.
+#
+# `scripts/` holds two real programs — the query benchmark harness and the
+# end-to-end fixture seeder — and until this file existed neither was linted or
+# format-checked by anything. The API's own config has a `"scripts/*"`
+# per-file-ignore, which was written expecting exactly this and never matched:
+# that path resolves inside `apps/api`, and these files are two directories up.
+#
+# Ruff picks the nearest configuration to each file, so `apps/api` keeps using
+# its own `pyproject.toml` and this file governs everything else.
+extend = "apps/api/pyproject.toml"
+
+[lint.isort]
+# These scripts add `apps/api` to `sys.path` and import the application. Without
+# this, ruff sorts `app.*` as a third-party package and its ordering disagrees
+# with the ordering inside `apps/api` for the same imports.
+known-first-party = ["app"]
+
+[lint.per-file-ignores]
+# Both scripts are console programs. Printing is the output.
+"scripts/*" = ["T20"]

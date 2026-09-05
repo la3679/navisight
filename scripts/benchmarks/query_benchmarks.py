@@ -52,10 +52,11 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
 
-from app.config import get_settings  # noqa: E402
-from app.db import collections  # noqa: E402
 from pymongo import ASCENDING, DESCENDING, MongoClient  # noqa: E402
 from pymongo.database import Database  # noqa: E402
+
+from app.config import get_settings  # noqa: E402
+from app.db import collections  # noqa: E402
 
 #: Enough to see past a single unlucky run without making the script a chore.
 REPEATS = 5
@@ -130,7 +131,7 @@ def run(database: Database[dict[str, Any]]) -> list[dict[str, Any]]:
     results.append(
         {
             "name": "One vessel's track",
-            "query": f"vessel_positions.find({{mmsi}}).sort(timestamp desc).limit(5000)",
+            "query": "vessel_positions.find({mmsi}).sort(timestamp desc).limit(5000)",
             "serves": "GET /api/v1/vessels/{mmsi}/positions and /track",
             "index": "position_mmsi_timestamp",
             "indexedMs": _median_ms(track_indexed, REPEATS),
@@ -327,7 +328,10 @@ def run(database: Database[dict[str, Any]]) -> list[dict[str, Any]]:
             "indexedMs": _median_ms(bounds_sorted, REPEATS),
             "scanMs": _median_ms(bounds_group, SCAN_REPEATS),
             "explainIndexed": _explain_stats(
-                positions.find({}, {"timestamp": 1}).sort([("timestamp", ASCENDING)]).limit(1).explain()
+                positions.find({}, {"timestamp": 1})
+                .sort([("timestamp", ASCENDING)])
+                .limit(1)
+                .explain()
             ),
         }
     )
